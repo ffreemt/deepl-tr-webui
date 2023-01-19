@@ -1,0 +1,24 @@
+{
+    "devDependencies": {
+        "npm-run-all": "^4.1.5",
+        "cross-env": "^7.0.3",
+        "husky": "^8.0.0"
+    }
+    "scripts": {
+        "start": "pyright && pytest && yarn style",
+        "test": "nodemon -w tests -w deepl_tr -x pytest tests",
+        "pyright": "nodemon -w deepl_tr -w .venv -e .py -x pyright deepl_tr tests",
+        "pytest": "nodemon -w tests -w deepl_tr -e .py -x pytest tests deepl_tr",
+        "style": "nodemon -w deepl_tr -w tests -x \"black tests deepl_tr && python -m flake8\"",
+        "docstyle": "nodemon -w deepl_tr -w tests -x pydocstyle --convention=google tests deepl_tr",
+        "pylint": "nodemon -w deepl_tr -e .py -x pylint deepl_tr",
+        "test:deepl_tr": "nodemon -w tests -e .py -x pytest -k deepl_tr tests",
+        "publish": "poetry build && poetry publish",
+        "black": "black tests deepl_tr",
+        "flake8": "flake8 tests deepl_tr",
+        "pflake8": "pflake8 tests deepl_tr",
+        "pep257": "pep257 tests deepl_tr",
+        "final": "run-s docstyle black flake8 pytest",
+        "prepare": "husky install"
+    }
+}

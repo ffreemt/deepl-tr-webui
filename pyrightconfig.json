@@ -1,0 +1,9 @@
+{
+   "include": ["tests", "deepl_tr"],
+  "venvPath": ".venv",
+  "reportTypeshedErrors": false,
+  "reportMissingImports": true,
+  "reportMissingTypeStubs": false,
+  "pythonVersion": "3.8",
+  "ignore": []
+}

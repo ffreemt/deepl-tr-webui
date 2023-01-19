@@ -1,0 +1,30 @@
+name: pytest
+
+on:
+  push:
+
+jobs:
+  flake8-pytest:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.8]
+        poetry-version: [1.2.1]
+        os: [ubuntu-18.04, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: ${{ matrix.poetry-version }}
+      - name: Install packages
+        run: poetry install  # --no-dev
+      - name: Run flake8
+        run: |
+          poetry run flake8 deepl_tr --exit-zero
+          # poetry run pytest
+      - name: Run pytest
+        run: poetry run pytest tests
