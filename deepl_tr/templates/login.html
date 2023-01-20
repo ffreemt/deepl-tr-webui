@@ -1,0 +1,191 @@
+{# login.html #}
+{% macro black_text12(text) -%}
+    <span style="font-size: 12px; color: Black;"> {{ text }} </span>
+{%- endmacro -%}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>deepl-tr-webui</title>
+
+		<meta charSet="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+        <!--link rel="stylesheet" href="http://localhost:8909/static/fontawesome.css" />
+        <link rel="stylesheet" href="http://localhost:8909/static/brands.css" />
+        <link rel="stylesheet" href="http://localhost:8909/static/solid.css" /-->
+
+        <link rel="stylesheet" href="http://localhost:{{ ns.httpserver_port }}/static/all.css" />
+        <!--script defer src="http://localhost:8909/fontawesome/js/all.js"></script--> <!--load all styles -->
+        <!-- <script defer src="http://localhost:{{ ns.httpserver_port }}/static/all.js"> -->
+
+    <style media="only screen">
+            html, body {
+                height: 100%;
+                width: 100%;
+                margin: 0;
+                box-sizing: border-box;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            html {
+                position: absolute;
+                top: 0;
+                left: 0;
+                padding: 0;
+                overflow: auto;
+            }
+
+            body {
+                padding: 1rem;
+                overflow: auto;
+            }
+
+.full-width-panel {
+  white-space: normal;
+  height: 100%;
+  width: 100%;
+  border: 2px solid grey;
+  border-style: ridge;
+  box-sizing: border-box;
+  padding: 5px;
+  background-color: darkgray;
+}
+
+.full-width-flag {
+  float: left;
+  padding: 6px;
+}
+
+.full-width-summary {
+  float: left;
+  margin-right: 5px;
+}
+
+.full-width-panel label {
+  padding-top: 3px;
+  display: inline-block;
+  font-size: 12px;
+}
+
+.full-width-center {
+  overflow-y: scroll;
+  border: 1px solid grey;
+  padding: 2px;
+  height: 100%;
+  box-sizing: border-box;
+  font-family: cursive;
+  background-color: #fafafa;
+}
+
+.full-width-center p {
+  margin-top: 0px;
+}
+.full-width-title {
+  font-size: 20px;
+}
+
+        </style>
+
+    <!--script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.js"></script-->
+    <!--script src="node_modules/ag-grid-community/dist/ag-grid-community.js"></script-->
+    <!--script src="ag-grid-community.min.js"></script-->
+
+    <!--link href="https://cdn.jsdelivr.net/npm/daisyui@2.47.0/dist/full.css" rel="stylesheet" type="text/css" /-->
+    <link href="http://localhost:{{ ns.httpserver_port }}/static/daisyui2.47.0.css" rel="stylesheet" type="text/css" />
+    <script src="http://localhost:{{ ns.httpserver_port }}/static/tailwind-plugins.css"></script>
+
+    <script src="http://localhost:{{ ns.httpserver_port }}/static/ag-grid-community.js"></script>
+    </head>
+    <body>
+        <!--div class="pros p-2 mx-auto"-->
+    <div class="container p-1 mx-auto flex flex-col">
+        <!--h1 class="text-slate-500 font-medium">WebUI 2 - Python Example-</h1-->
+
+    <div>
+        {{ black_text12("    fas fa-user:  solid style ") }}
+        <span style="font-size: 3em; color: Tomato;">
+      <i class="fas fa-user"></i> <!-- uses solid style -->
+        </span>
+    <span style="font-size: 12px; color: Black;"> far fa-user : regular style</span>
+        <span style="font-size: 20px; color: Dodgerblue;">
+  <i class="far fa-user"></i> <!-- uses regular style -->
+        </span>
+
+                <!-- far fa-search only shows a box -->
+    <span style="font-size: 12px; color: Black;"> fa fa-search</span>
+        <span style="font-size: 20px; color: Dodgerblue;">
+        <i class="fa fa-search text-1xl text-rose-600 opacity-40 hover:opacity-100"></i> <!-- uses regular style -->
+        </span>
+
+      <span style="font-size: 12px; color: Black;"> fab fa-github-square: brands style</span>
+
+        <span style="font-size: 20px; color: Mediumslateblue;">
+  <i class="fab fa-github-square"></i> <!-- uses brands style -->
+
+    <span style="font-size: 12px; color: Black;"> fab fa-font-awesome </span>
+
+  <i class="fab fa-font-awesome"></i>
+        </span>
+    <br/>
+          {{ black_text12("    fa fa-fan text-7xl text-green-500 ") }}
+    <i class="fa fa-fan text-7xl text-green-500"></i>
+
+        {{ black_text12("    fa fa-user text-[99px] text-indigo-600 hover:text-amber-400 ") }}
+    <i class="fa fa-user text-[99px] text-indigo-600 hover:text-amber-400"></i>
+
+{{ black_text12(" fa-solid (solid doesnt work)  fa-search text-9xl text-rose-600 opacity-60 hover:opacity-100 ") }}
+    <i class="fa fa-search text-9xl text-rose-600 opacity-60 hover:opacity-100"></i>
+
+    <br />
+    <i class="fa fa-fish"></i>
+  <i class="fa fa-frog"></i>
+  <i class="fa fa-user-ninja vanished"></i>
+  <i class="fa-brands fa-facebook"></i>
+  <i class="fa fa-fish"></i>
+
+    </div>
+
+        {% include 'aggrid-table.html' %}
+
+       <div>
+        <input type="password" id="MyInput" OnKeyUp="document.getElementById('err').innerHTML='&nbsp;';" autocomplete="off">
+
+        <button id="CheckPassword" class="px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">Check Password</button> <button id="Exit" class="px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">Exit</button>
+
+        </div>
+
+        <!-- https://www.kindacode.com/article/using-tailwind-css-with-font-awesome-icons-a-deep-dive/#Font_Awesome -->
+        <div class="pl-2 border border-slate-300 rounded-md">
+            <label for="email"><i class="fa fa-lock text-gray-500"></i></label>
+            <input type="password" id="password" name="password" placeholder="password"
+                class="px-2 py-2 w-48 border-0 focus:outline-0" />
+        </div>
+        <div class="px-2">
+    <button class="btn btn-accent btn-outline w-32 font-semibold rounded-full border border-purple-200 hover:text-white hover:text-white hover:bg-purple-600">Button</button>
+        </div>
+
+    <button class="btn btn-wide"> btn-wide </button>
+    <button class="btn btn-circle"> btn-circle </button>
+    <button class="btn btn-square btn-xs loading"> btn-square </button>
+
+    <input type="file" class="file-input file-input-ghost w-full max-w-xs" />
+    <input type="file" class="file-input w-full max-w-xs" />
+
+<div class="form-control w-full max-w-xs">
+  <label class="label">
+    <span class="label-text">Pick a file</span>
+    <!--span class="label-text-alt">Alt label</span-->
+  </label>
+  <input type="file" class="file-input file-input-ghost file-input-accent file-input-bordered w-full max-w-xs" />
+  <label class="label">
+    <span class="label-text-alt">Alt label</span>
+    <span class="label-text-alt">Alt label</span>
+  </label>
+</div>
+
+    <div id="err" style="color: #dbdd52">&nbsp;</div>
+
+    </div>
+    </body>
+</html>

@@ -6,7 +6,7 @@ deepl translate using deepl-fastapi and webui2
 ## Install it
 
 ```shell
-pip install deepl-tr
+x (not ready yet) pip install deepl-tr
 # pip install git+https://github.com/ffreemt/deepl-tr-webui
 # poetry add git+https://github.com/ffreemt/deepl-tr-webui
 # git clone https://github.com/ffreemt/deepl-tr-webui && cd deepl-tr-webui

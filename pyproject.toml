@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "deepl_tr"
+name = "deepl-tr"
 version = "0.1.0-alpha.0"
-description = "deepl_tr"
+description = "deepl translate using deepl-fastapi and webui2"
 authors = ["ffreemt"]
 license = "MIT"
 readme = "README.md"
@@ -14,6 +14,10 @@ set-loglevel = "^0.1.2"
 typer = "^0.4.1"
 icecream = "^2.1.1"
 install = "^1.3.5"
+webui2 = "^2.0.3"
+Jinja2 = "^3.1.2"
+loguru = "^0.6.0"
+deepl-fastapi = "^0.1.2"
 
 [tool.poe.executor]
 type = "poetry"
@@ -40,7 +44,6 @@ tunnel = {cmd = "ssh -CN ip_or_hostname_defined_in_hosts -L 9091:127.0.0.1:9091"
 pytest = "^7.1"
 flake8 = "^3.9.2"
 isort = "^5.10.1"
-black = "^22.3.0"
 pylint = "^2.14.2"
 pyright = "^1.1.254"
 pydocstyle = "^6.1.1"
@@ -49,7 +52,7 @@ toml = "^0.10.2"
 poethepoet = "^0.10.0"
 
 [tool.poetry.scripts]
-"deepl-tr-webui" = "deepl_tr.__main__:app"
+"deepl-tr" = "deepl_tr.__main__:app"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

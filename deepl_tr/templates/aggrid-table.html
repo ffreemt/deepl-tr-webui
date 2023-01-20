@@ -1,0 +1,43 @@
+    <div id="myGrid" style="height: 200px; width: 100%;" class="ag-theme-balham"></div>
+    <script type="text/javascript" charset="utf-8">
+const columnDefs = [
+  {
+    headerName: 'text1',
+    field: "text1",
+    editable: true,
+    flex: 1,
+    resizable: true,
+    autoHeight: true,
+    wrapText: true,
+    //cellEditor: 'agLargeTextCellEditor',
+    cellEditorPopup: true,
+  },
+  {
+    headerName: 'text2',
+    field: "text2",
+    editable: true,
+    flex: 1,
+    resizable: true,
+    autoHeight: true,
+    wrapText: true,
+    cellEditor: 'agLargeTextCellEditor',
+  },
+  {
+    headerName: 'metric',
+    field: "metric",
+    editable: true,
+    width: 59,
+  },
+]
+        const rowData = [
+            {text1: 'Toyota', text2: 'Celica', metric: ""},
+            {text1: 'Ford', text2: 'Mondeo', metric: ""},
+            {text1: 'Porsche', text2: 'Boxter', metric: ""}
+        ];
+        const gridOptions = {
+            columnDefs: columnDefs,
+            rowData: rowData
+        };
+        const eGridDiv = document.querySelector('#myGrid');
+        new agGrid.Grid(eGridDiv, gridOptions);
+    </script>
