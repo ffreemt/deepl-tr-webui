@@ -61,7 +61,7 @@ def httpserver(port: int = 8909):
 
     with socketserver.TCPServer(("", httpserver.port), Handler) as httpd:
         logger.debug(f" cwd: {Path.cwd()}")
-        logger.info(f"\tRunning at port: {httpserver.port}")
+        logger.info(f" Running at port: {httpserver.port}")
         httpd.serve_forever()
 
 

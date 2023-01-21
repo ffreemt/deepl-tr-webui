@@ -1,4 +1,5 @@
 {# login.html #}
+
 {% macro black_text12(text) -%}
     <span style="font-size: 12px; color: Black;"> {{ text }} </span>
 {%- endmacro -%}
@@ -6,7 +7,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>deepl-tr-webui</title>
+        <title>deepl-tr-webui v{{ ns.version }}</title>
 
 		<meta charSet="UTF-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -85,7 +86,7 @@
   font-size: 20px;
 }
 
-        </style>
+</style>
 
     <!--script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.js"></script-->
     <!--script src="node_modules/ag-grid-community/dist/ag-grid-community.js"></script-->
@@ -98,15 +99,28 @@
     <script src="http://localhost:{{ ns.httpserver_port }}/static/ag-grid-community.js"></script>
     </head>
     <body>
+
         <!--div class="pros p-2 mx-auto"-->
     <div class="container p-1 mx-auto flex flex-col">
         <!--h1 class="text-slate-500 font-medium">WebUI 2 - Python Example-</h1-->
 
-    <div>
-        {{ black_text12("    fas fa-user:  solid style ") }}
+      {# include "tabs.html" #}
+      
+      {% from 'tabs.html' import navbar_active %}
+
+      {{ navbar_active(1) }}
+
+      <div>
+        {{ black_text12("    fas fa-file/info/edit:  solid style ") }}
+        <span style="font-size: 20px; color: Tomato;">
+      <button id="filebtn"<i class="fab fa-file-alt"></i></button>   <i class="fas fa-edit"></i> <i class="fas fa-info"></i>
+        </span>
+
+      {{ black_text12("    fas fa-user:  solid style ") }}
         <span style="font-size: 3em; color: Tomato;">
       <i class="fas fa-user"></i> <!-- uses solid style -->
         </span>
+
     <span style="font-size: 12px; color: Black;"> far fa-user : regular style</span>
         <span style="font-size: 20px; color: Dodgerblue;">
   <i class="far fa-user"></i> <!-- uses regular style -->
@@ -146,7 +160,7 @@
 
     </div>
 
-        {% include 'aggrid-table.html' %}
+        {% include "aggrid-table.html" %}
 
        <div>
         <input type="password" id="MyInput" OnKeyUp="document.getElementById('err').innerHTML='&nbsp;';" autocomplete="off">

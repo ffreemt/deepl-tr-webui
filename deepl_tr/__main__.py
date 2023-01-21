@@ -12,6 +12,7 @@ from typing import Optional
 from jinja2 import Environment, FileSystemLoader
 
 import typer
+import webbrowser
 from loguru import logger
 from webui import webui
 from set_loglevel import set_loglevel
@@ -19,9 +20,20 @@ from set_loglevel import set_loglevel
 from deepl_tr import __version__, deepl_tr
 from .httpserver import httpserver  # default port 8909
 
+rowData = [
+    {"text1": 'Toyota', "text2": 'Celica', "metric": ""},
+    {"text1": 'Ford', "text2": 'Mondeo', "metric": ""},
+    {"text1": 'Porsche', "text2": 'Boxter', "metric": ""}
+]
+
 HTTPSERVER_PORT = 8909
 URL = f"http://localhost:{HTTPSERVER_PORT}/ag-grid-community.js"
-ns = SimpleNamespace(httpserver_port=HTTPSERVER_PORT)
+ns = SimpleNamespace(
+    httpserver_port=HTTPSERVER_PORT,
+    rowData=rowData,
+    active_tab=1,
+    version=__version__,
+)
 pdir = Path(__file__).parent
 env = Environment(loader=FileSystemLoader(f"{pdir}/templates"))
 
@@ -41,6 +53,32 @@ def _version_callback(value: bool) -> None:
 def login_html() -> str:
     """Prep html for login."""
     _ = env.get_template("login.html")
+    return _.render(ns=ns)
+
+
+def tab1_html() -> str:
+    """Prep html for tab1 (file tab)."""
+    _ = env.get_template("tab1.html")
+    return _.render(ns=ns)
+
+
+def tab2_html() -> str:
+    """Prep html for tab2 (edit tab)."""
+    _ = env.get_template("tab2.html")
+    return _.render(ns=ns)
+
+
+def tab3_html() -> str:
+    """Prep html for tab3 (info tab)."""
+    _ = env.get_template("tab3.html")
+    # _ = env.get_template("tab3a.html")
+    return _.render(ns=ns)
+
+
+def tab3a_html() -> str:
+    """Prep html for tab3 (info tab)."""
+    # _ = env.get_template("tab3.html")
+    _ = env.get_template("tab3a.html")
     return _.render(ns=ns)
 
 
@@ -84,6 +122,53 @@ def close_the_application(evt: webui.event):
     del evt
     webui.exit()
 
+
+def slot_tab1(evt: webui.event):
+    """Reveive signal tab1."""
+    logger.debug(" tab1 clicked...")
+    if ns.active_tab != 1:
+        logger.debug("\t Update display V to tab1 ")
+        ns.active_tab = 1
+        evt.window.show(tab1_html())
+
+def slot_tab2(evt: webui.event):
+    """Reveive signal tab1."""
+    logger.debug(" tab2 clicked...")
+    if ns.active_tab != 2:
+        logger.debug("\t Update display V to tab2 ")
+        ns.active_tab = 2
+        evt.window.show(tab2_html())
+
+
+def slot_tab3(evt: webui.event):
+    """Reveive signal tab1."""
+    logger.debug(" tab3 clicked...")
+    if ns.active_tab != 3:
+        logger.debug("\t Update display V to tab3 ")
+        ns.active_tab = 3
+        evt.window.show(tab3_html())
+        # evt.window.show(tab3a_html())
+
+
+def slot_tab4(evt: webui.event):
+    """Reveive signal tab1."""
+    logger.debug(" tab4 clicked...")
+    del evt
+    webui.exit()
+
+
+def slot_repolink(evt: webui.event):
+    """Handle id repolink."""
+    logger.debug(" repolink clicked...")
+    _ = "https://github.com/ffreemt/deepl-tr-webui"
+    webbrowser.open(_)
+
+
+def slot_qqgrlink(evt: webui.event):
+    """Handle id repolink."""
+    logger.debug(" qqgrlink clicked...")
+    _ = "https://jq.qq.com/?_wv=1027&k=XRCplcfg"
+    webbrowser.open(_)
 
 @app.command()
 def main(
@@ -140,9 +225,19 @@ def main(
     MyWindow.bind("CheckPassword", check_the_password)
     MyWindow.bind("Exit", close_the_application)
 
+    MyWindow.bind("tab1", slot_tab1)
+    MyWindow.bind("tab2", slot_tab2)
+    MyWindow.bind("tab3", slot_tab3)
+    MyWindow.bind("tab4", slot_tab4)
+
+    MyWindow.bind("repolink", slot_repolink)
+    MyWindow.bind("qqgrlink", slot_qqgrlink)
+
     # Show the window
     # MyWindow.show(login_html)
-    MyWindow.show(loginhtml)
+
+    # MyWindow.show(loginhtml)
+    MyWindow.show(tab1_html())
 
     # Wait until all windows are closed
     webui.wait()

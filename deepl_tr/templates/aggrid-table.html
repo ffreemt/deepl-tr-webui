@@ -1,5 +1,7 @@
-    <div id="myGrid" style="height: 200px; width: 100%;" class="ag-theme-balham"></div>
-    <script type="text/javascript" charset="utf-8">
+
+<div id="myGrid" style="height: 200px; width: 100%;" class="ag-theme-balham"></div>
+
+<script type="text/javascript" charset="utf-8">
 const columnDefs = [
   {
     headerName: 'text1',
@@ -36,8 +38,9 @@ const columnDefs = [
         ];
         const gridOptions = {
             columnDefs: columnDefs,
-            rowData: rowData
+            //rowData: rowData
+            rowData: {{ ns.rowData }}
         };
         const eGridDiv = document.querySelector('#myGrid');
         new agGrid.Grid(eGridDiv, gridOptions);
-    </script>
+</script>

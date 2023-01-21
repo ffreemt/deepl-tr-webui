@@ -1,0 +1,31 @@
+{# tabs.html #}
+<!-- daisyui tabs https://daisyui.com/components/tab/ -->
+
+{% macro navbar_active(atab) %}
+<div class="navbar sticky fixed z-1 top-8 bg-base-100">
+  <div class="flex-1">
+    <div class="tabs">
+
+      <a id="tab1" class={% if atab|int == 1 %} "tab tab-lifted tab-active"> {% else %} "tooltip tab tab-lifted" data-tip="Load a text file or paste text"> {% endif %}
+        <span style="font-size: 25px; color: Tomato;">
+          <i class="fa fa-file-alt"></i>
+        </span>
+          <!-- <button id="filebtn"><i class="fa fa-file-alt"></i>Normal</button> -->
+      </a>
+
+      <a id="tab2" class={% if atab|int == 2 %} "tab tab-lifted tab-active"> {% else %} "tooltip tab tab-lifted" data-tip="Edit when necesssary"> {% endif %}
+        <span style="font-size: 25px; color: Tomato;">
+          <i class="fas fa-edit"></i>
+        </span>
+      </a>
+
+      <a id="tab3" class={% if atab|int == 3 %} "tab tab-lifted tab-active"> {% else %} "tooltip tab tab-lifted" data-tip="qq-group:316287378"> {% endif %}
+        <span style="font-size: 25px; color: Tomato;">
+          <i class="fa fa-info"></i>
+        </span>
+      </a>
+
+    </div>
+  </div>
+</div>
+{% endmacro %}
