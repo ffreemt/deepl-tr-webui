@@ -1,0 +1,25 @@
+
+<div id="myGrid" style="height: 200px; width: 100%;" class="ag-theme-balham"></div>
+
+<script type="text/javascript" charset="utf-8">
+const columnDefs = [
+  {
+    headerName: 'text',
+    field: "text",
+    editable: true,
+    flex: 1,
+    resizable: true,
+    autoHeight: true,
+    wrapText: true,
+    cellEditor: 'agLargeTextCellEditor',
+    //cellEditorPopup: true,
+  },
+]
+  const gridOptions = {
+    columnDefs: columnDefs,
+    //rowData: rowData
+    rowData: {{ ns.row_data1 }}
+  };
+  const eGridDiv = document.querySelector('#myGrid');
+  new agGrid.Grid(eGridDiv, gridOptions);
+</script>

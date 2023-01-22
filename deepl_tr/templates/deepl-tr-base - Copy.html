@@ -7,13 +7,7 @@
 
 		<meta charSet="UTF-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <style media="only screen">
-      body {
-          padding: 1rem;
-          overflow: auto;
-      }
-    </style>
-    
+
         <!--link rel="stylesheet" href="http://localhost:8909/static/fontawesome.css" />
         <link rel="stylesheet" href="http://localhost:8909/static/brands.css" />
         <link rel="stylesheet" href="http://localhost:8909/static/solid.css" /-->
@@ -21,6 +15,74 @@
         <link rel="stylesheet" href="http://localhost:{{ ns.httpserver_port }}/static/all.css" />
         <!--script defer src="http://localhost:8909/fontawesome/js/all.js"></script--> <!--load all styles -->
         <!-- <script defer src="http://localhost:{{ ns.httpserver_port }}/static/all.js"> -->
+
+    <style media="only screen">
+            html, body {
+                height: 100%;
+                width: 100%;
+                margin: 0;
+                box-sizing: border-box;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            html {
+                position: absolute;
+                top: 0;
+                left: 0;
+                padding: 0;
+                overflow: auto;
+            }
+
+            body {
+                padding: 1rem;
+                overflow: auto;
+            }
+
+.full-width-panel {
+  white-space: normal;
+  height: 100%;
+  width: 100%;
+  border: 2px solid grey;
+  border-style: ridge;
+  box-sizing: border-box;
+  padding: 5px;
+  background-color: darkgray;
+}
+
+.full-width-flag {
+  float: left;
+  padding: 6px;
+}
+
+.full-width-summary {
+  float: left;
+  margin-right: 5px;
+}
+
+.full-width-panel label {
+  padding-top: 3px;
+  display: inline-block;
+  font-size: 12px;
+}
+
+.full-width-center {
+  overflow-y: scroll;
+  border: 1px solid grey;
+  padding: 2px;
+  height: 100%;
+  box-sizing: border-box;
+  font-family: cursive;
+  background-color: #fafafa;
+}
+
+.full-width-center p {
+  margin-top: 0px;
+}
+.full-width-title {
+  font-size: 20px;
+}
+
+</style>
 
     <!--script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.js"></script-->
     <!--script src="node_modules/ag-grid-community/dist/ag-grid-community.js"></script-->
@@ -32,19 +94,13 @@
 
     <script src="http://localhost:{{ ns.httpserver_port }}/static/ag-grid-community.js"></script>
     </head>
-
     <body>
-    <!-- <div class="container p-1 mt-15 mx-auto flex flex-col"> -->
-    <!-- <div class="container p-1 mt-15 mx-auto columns-1"> -->
-
-    <main class="my-0 mx-auto max-w-3xl>
-
-    <div class="container p-1 mt-15 mx-auto grid grid-cols-1">
+    <div class="container p-1 mt-15 mx-auto flex flex-col">
         <!--h1 class="text-slate-500 font-medium">WebUI 2 - Python Example-</h1-->
 
       {# include "navbar.html" #}
 
-      {% from 'navbar-active.html' import navbar_active %}
+      {% from 'navbar_active.html' import navbar_active %}
 
       {% block navbar_active %}
         {{ navbar_active(1) }}
@@ -55,6 +111,5 @@
       <!-- <div id="log" style="color: red">&nbsp;</div> -->
       <div id="log" style="color: #dbdd52">&nbsp;</div>
     </div>
-    </main>
     </body>
 </html>

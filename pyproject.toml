@@ -18,6 +18,7 @@ webui2 = "^2.0.3"
 Jinja2 = "^3.1.2"
 loguru = "^0.6.0"
 deepl-fastapi = "^0.1.2"
+cchardet = "^2.1.7"
 
 [tool.poe.executor]
 type = "poetry"

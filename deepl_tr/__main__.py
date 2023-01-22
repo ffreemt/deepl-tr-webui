@@ -10,6 +10,7 @@ from time import sleep
 from types import SimpleNamespace
 from typing import Optional
 from jinja2 import Environment, FileSystemLoader
+from itertools import zip_longest
 
 import typer
 import webbrowser
@@ -19,7 +20,11 @@ from set_loglevel import set_loglevel
 
 from deepl_tr import __version__, deepl_tr
 from .httpserver import httpserver  # default port 8909
+from .loadtext import loadtext  # default port 8909
 
+row_data1 = [
+    {"text": ""},
+]
 rowData = [
     {"text1": 'Toyota', "text2": 'Celica', "metric": ""},
     {"text1": 'Ford', "text2": 'Mondeo', "metric": ""},
@@ -30,9 +35,13 @@ HTTPSERVER_PORT = 8909
 URL = f"http://localhost:{HTTPSERVER_PORT}/ag-grid-community.js"
 ns = SimpleNamespace(
     httpserver_port=HTTPSERVER_PORT,
+    row_data1=row_data1,
     rowData=rowData,
     active_tab=1,
     version=__version__,
+    filename="",
+    cwd=[Path("~").expanduser() / "Documents"],
+    text="",
 )
 pdir = Path(__file__).parent
 env = Environment(loader=FileSystemLoader(f"{pdir}/templates"))
@@ -170,6 +179,67 @@ def slot_qqgrlink(evt: webui.event):
     _ = "https://jq.qq.com/?_wv=1027&k=XRCplcfg"
     webbrowser.open(_)
 
+
+def slot_loadfile(evt: webui.event):
+    """Hanlde tab1.html <input type="file"> id loadfile."""
+    logger.debug(" input file loadfile (Submit) clicked...")
+
+    res = evt.window.run_js("""return document.getElementById("filename").value""")
+    # Check for any error
+    if res.error is True:
+        print("JavaScript Error: " + res.data)
+        return
+
+    logger.debug(f" cwd: {Path.cwd()}")
+
+    filename = res.data
+    logger.debug(f"filename: {filename}")
+
+    if not filename:
+        evt.window.run_js(
+            f"""document.getElementById('log').innerHTML = 'No file loaded';"""
+        )
+        return
+
+    # locate file in ns.cwd: cwd, ~/Documents
+    filename = Path(filename).name
+    for path_ in ns.cwd:
+        filepath = path_ / filename
+        if filepath.is_file():
+            ns.filename = filepath
+            break
+    else:
+        ns.filename = ""
+        logger.info(f" file {filename} not found in {ns.cwd}")
+        _ = " or ".join(elm.as_posix() for elm in ns.cwd)
+        evt.window.run_js(
+            f"""document.getElementById('log').innerHTML = 'File not found in {_}';"""
+        )
+        return
+
+    ns.text = loadtext(filepath)
+    logger.debug(f"ns.text[:80]: {ns.text[:180]}")
+
+    _ = [elm for elm in ns.text.splitlines() if elm.strip()]
+    ns.row_data1 = [dict([elm]) for elm in zip_longest([], _, fillvalue="text")]
+
+    evt.window.show(tab1_html())
+
+    evt.window.run_js(
+        f"""document.getElementById('log').innerHTML = 'ns.text[:180]: {ns.text[:180]}';"""
+    )
+
+    return
+
+    # const path = (window.URL || window.webkitURL).createObjectURL(file);
+    res = evt.window.run_js("""const file = document.getElementById("filename").value; console.log("file: ", file); return (window.URL || window.webkitURL).createObjectURL(file)""")
+    if res.error is True:
+        logger.error("JavaScript Error: " + res.data)
+        return
+    filepath = res.data
+    logger.debug(f"filepath: {filepath}")
+
+
 @app.command()
 def main(
     version: Optional[bool] = typer.Option(  # pylint: disable=(unused-argument
@@ -211,6 +281,9 @@ def main(
     while True:
         if hasattr(httpserver, "port"):
             ns.httpserver_port = httpserver.port
+            ns.cwd.insert(0, Path(httpserver.cwd))
+            logger.debug(f" cwd paths: {ns.cwd}")
+            logger.debug(f"cwd paths exist: {[elm.exists() for elm in ns.cwd]}")
             break
         sleep(0.1)
 
@@ -232,6 +305,8 @@ def main(
 
     MyWindow.bind("repolink", slot_repolink)
     MyWindow.bind("qqgrlink", slot_qqgrlink)
+
+    MyWindow.bind("loadfile", slot_loadfile)
 
     # Show the window
     # MyWindow.show(login_html)

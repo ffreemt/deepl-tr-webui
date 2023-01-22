@@ -39,6 +39,7 @@ def httpserver(port: int = 8909):
         port: inital port to try
     """
     cwd = Path.cwd()
+    httpserver.cwd = cwd
     os.chdir(Path(__file__).parent)
 
     logger.debug(f" cwd: {Path.cwd()}")

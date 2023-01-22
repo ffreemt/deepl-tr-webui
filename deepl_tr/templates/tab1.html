@@ -3,44 +3,28 @@
 {% block navbar_active %}
   {{ navbar_active(1) }}
 
-<div class="mt-12">
+<!-- <div class="mt-12"> -->
+<!-- </div> -->
 
-tab1 000 stuff
-
-tab1 stuff
-
-tab1 stuff
-tab1 stuff
-
-tab1 111 stuff
-
-tab1 stuff1
-tab1 stuff
-
-tab1 stuff
-
-tab1 222 stuff2
-tab1 stuff
-
-tab1 stuff
-
-tab1 stuff3
-tab1 stuff
-
-tab1 stuff
-
-tab1 stuff
-tab1 stuff
-
-tab1 stuff
-
-tab1 stuff 7
-tab1 stuff 8
-
-tab1 stuff 9
-
-tab1 stuff 10
-
+<div class="mt-6">
+&nbsp;
 </div>
+
+<!-- <div class="px-1 mt-39 flex flex-row gap gap-1"> -->
+
+<div class="indicator">
+  <div class="indicator-item indicator-bottom">
+    <button id="loadfile" class="btn btn-accent"> Load </button>
+  </div>
+  <div class="form-control w-41 bg-red-50">
+    <label class="label">
+      <span class="label-text">Pick a (.txt) file  </span>
+      <!--span class="label-text-alt">Alt label</span-->
+    </label>
+    <input id="filename" name="filename" type="file" class="file-input file-input-ghost file-input-accent file-input-bordered w-full max-w-xs" accept=".txt, .md"/>
+  </div>
+</div>
+
+{% include "aggrid-table1.html" %}
 
 {% endblock %}
