@@ -2,4 +2,17 @@
 
 {% block navbar_active %}
   {{ navbar_active(2) }}
+
+<div class="mt-6">
+&nbsp;
+</div>
+
+<div class="px-5 flex flex-row gap gap-1">
+      <button onclick="onBtnUpdate()"  id="saveFile2" class="btn btn-accent"> SaveEdit </button>
+      <button id="saveCsv2" class="btn btn-accent"> SaveCSV </button>
+<textarea style="display:{{ 'inline' and ns.debug or 'none' }}" id="csvResult2">Click the SAVE button to view exported CSV here</textarea>
+</div>
+
+{% include "aggrid-table2.html" %}
+
 {% endblock %}

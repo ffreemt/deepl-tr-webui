@@ -1,0 +1,39 @@
+
+<div id="myGrid2" style="height: 800px; width: 100%;" class="ag-theme-balham"></div>
+
+<script type="text/javascript" charset="utf-8">
+const columnDefs = [
+  {
+    headerName: 'text',
+    field: "text",
+    editable: true,
+    flex: 1,
+    resizable: true,
+    autoHeight: true,
+    wrapText: true,
+    //cellEditor: 'agLargeTextCellEditor',
+    cellEditorPopup: true,
+  },
+  {
+    headerName: 'text-tr',
+    field: "text-tr",
+    editable: true,
+    flex: 1,
+    resizable: true,
+    autoHeight: true,
+    wrapText: true,
+    cellEditor: 'agLargeTextCellEditor',
+  },
+]
+    const gridOptions = {
+        columnDefs: columnDefs,
+        //rowData: rowData
+        rowData: {{ ns.row_data2 }}
+    };
+    const eGridDiv = document.querySelector('#myGrid2');
+    new agGrid.Grid(eGridDiv, gridOptions);
+    
+  function onBtnUpdate() {
+    document.querySelector('#csvResult2').value = gridOptions.api.getDataAsCsv();
+  }
+</script>

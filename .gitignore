@@ -141,3 +141,4 @@ cython_debug/
 links/
 # .gitignore
 node_modules
+deepl-tr-webui-pad-memo.txt

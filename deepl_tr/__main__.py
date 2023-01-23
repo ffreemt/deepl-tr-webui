@@ -11,19 +11,26 @@ from types import SimpleNamespace
 from typing import Optional
 from jinja2 import Environment, FileSystemLoader
 from itertools import zip_longest
+from multiprocessing import Process
 
 import typer
 import webbrowser
 from loguru import logger
 from webui import webui
 from set_loglevel import set_loglevel
+from deepl_fastapi.run_uvicorn import run_uvicorn
 
 from deepl_tr import __version__, deepl_tr
 from .httpserver import httpserver  # default port 8909
 from .loadtext import loadtext  # default port 8909
+from .list2csv import list2csv, csv2list
 
 row_data1 = [
     {"text": ""},
+]
+row_data2 = [
+    {"text": ""},
+    {"text-tr": ""},
 ]
 rowData = [
     {"text1": 'Toyota', "text2": 'Celica', "metric": ""},
@@ -32,17 +39,29 @@ rowData = [
 ]
 
 HTTPSERVER_PORT = 8909
+DEEPL_PORT = 9909
 URL = f"http://localhost:{HTTPSERVER_PORT}/ag-grid-community.js"
 ns = SimpleNamespace(
     httpserver_port=HTTPSERVER_PORT,
+    deepl_port=DEEPL_PORT,
     row_data1=row_data1,
-    rowData=rowData,
+    row_data2=row_data2,
+    # rowData=rowData,
     active_tab=1,
     version=__version__,
     filename="",
     cwd=[Path("~").expanduser() / "Documents"],
     text="",
+    text2="",
+    list1=[[]],
+    list2=[[]],
+    debug=False,
 )
+if set_loglevel() <= 10:
+    ns.debug = True
+
+logger.debug(f" ns.debug: {ns.debug}")
+
 pdir = Path(__file__).parent
 env = Environment(loader=FileSystemLoader(f"{pdir}/templates"))
 
@@ -80,7 +99,6 @@ def tab2_html() -> str:
 def tab3_html() -> str:
     """Prep html for tab3 (info tab)."""
     _ = env.get_template("tab3.html")
-    # _ = env.get_template("tab3a.html")
     return _.render(ns=ns)
 
 
@@ -135,33 +153,66 @@ def close_the_application(evt: webui.event):
 def slot_tab1(evt: webui.event):
     """Reveive signal tab1."""
     logger.debug(" tab1 clicked...")
-    if ns.active_tab != 1:
-        logger.debug("\t Update display V to tab1 ")
-        ns.active_tab = 1
+    if ns.active_tab == 1:
+        # already in tab1, do nothing
+        return
+
+    # save tab2 rg-grid data (if modified) to ns.row_data2
+
+
+    logger.debug("\t Update display V to tab1 ")
+    try:
         evt.window.show(tab1_html())
+        ns.active_tab = 1
+    except Exception as exc:
+        logger.error(exc)
+        logger.exception(exc)
+        _ = '''  if Exception occurs, the following will wont help
+        try:
+            evt.window.run_js(
+                f"""document.getElementById('log').innerHTML = 'slot_tab1 exc: {exc}';"""
+            )
+        except Exception as exc:
+            logger.error(f"log exc: {exc}")
+        # '''
+
 
 def slot_tab2(evt: webui.event):
     """Reveive signal tab1."""
     logger.debug(" tab2 clicked...")
-    if ns.active_tab != 2:
-        logger.debug("\t Update display V to tab2 ")
-        ns.active_tab = 2
+    if ns.active_tab == 2:
+        # tab2 alreay active, do nothing
+        row_data = evt.window.run_js(
+            f"""console.log("__main__.py l.181");"""
+            f"""const _ = document.querySelector('#myGrid2'); console.log(_); return _;"""
+        )
+        return
+
+    logger.debug(f"\t Update display V to tab2, ns: {ns} ")
+    try:
         evt.window.show(tab2_html())
+        ns.active_tab = 2
+    except Exception as exc:
+        logger.error(exc)
 
 
 def slot_tab3(evt: webui.event):
     """Reveive signal tab1."""
     logger.debug(" tab3 clicked...")
-    if ns.active_tab != 3:
-        logger.debug("\t Update display V to tab3 ")
-        ns.active_tab = 3
+    if ns.active_tab == 3:
+        return
+
+    logger.debug("\t Update display V to tab3 ")
+    try:
         evt.window.show(tab3_html())
-        # evt.window.show(tab3a_html())
+        ns.active_tab = 3
+    except Exception as exc:
+        logger.error(exc)
 
 
 def slot_tab4(evt: webui.event):
-    """Reveive signal tab1."""
-    logger.debug(" tab4 clicked...")
+    """Reveive signal tab4."""
+    logger.debug(" tab4 clicked... exiting")
     del evt
     webui.exit()
 
@@ -182,12 +233,12 @@ def slot_qqgrlink(evt: webui.event):
 
 def slot_loadfile(evt: webui.event):
     """Hanlde tab1.html <input type="file"> id loadfile."""
-    logger.debug(" input file loadfile (Submit) clicked...")
+    logger.debug(" input file loadfile (LOAD) clicked...")
 
     res = evt.window.run_js("""return document.getElementById("filename").value""")
     # Check for any error
     if res.error is True:
-        print("JavaScript Error: " + res.data)
+        logger.error("JavaScript Error: " + res.data)
         return
 
     logger.debug(f" cwd: {Path.cwd()}")
@@ -221,10 +272,18 @@ def slot_loadfile(evt: webui.event):
     logger.debug(f"ns.text[:80]: {ns.text[:180]}")
 
     _ = [elm for elm in ns.text.splitlines() if elm.strip()]
+
+    # prep for #csvResult1
+    ns.list1 = csv2list(list2csv(_))
+    ns.list1.insert(0, ["text"])
+
     ns.row_data1 = [dict([elm]) for elm in zip_longest([], _, fillvalue="text")]
 
     evt.window.show(tab1_html())
 
+    evt.window.run_js(
+        f"""document.querySelector('#csvResult1').value = {list2csv(ns.list1)}"""
+    )
     evt.window.run_js(
         f"""document.getElementById('log').innerHTML = 'ns.text[:180]: {ns.text[:180]}';"""
     )
@@ -238,6 +297,29 @@ def slot_loadfile(evt: webui.event):
         return
     filepath = res.data
     logger.debug(f"filepath: {filepath}")
+
+
+def slot_savefile(evt: webui.event):
+    """Handle saveFile button, update ns.list1 with gridOptions.api.getDataAsCsv()."""
+    # save tab1 rg-grid data (if modified) to ns.row_data1/ns.list1 #csvResult1
+    #       possible alternative if can be done: save to localstorage?
+    #  https://www.ag-grid.com/javascript-data-grid/csv-export/
+    #  document.querySelector('#csvResult').value = gridOptions.api.getDataAsCsv();
+    # assumc SAVE button presssed, ag-grid table1 save to #csvResult1
+
+    # gridOptions.api.getDataAsCsv(): '"text"\r\n"a"'
+    as_csv = evt.window.run_js(
+        f"""return gridOptions.api.getDataAsCsv();"""
+    )
+    if as_csv.error is True:
+        logger.error(f" as_csv.error: {as_csv.data}")
+        return
+    logger.debug(as_csv.data[:10])
+
+    # update ns.row_data1/ns.list1
+    ns.list1 = csv2list(as_csv.data)[1:]  # sans the first entry (header)
+    _ = zip_longest([], [elm[0] for elm in ns.list1], fillvalue="text")
+    ns.row_data1 = [dict([elm]) for elm in _]
 
 
 @app.command()
@@ -256,7 +338,7 @@ def main(
         help="Internal deepl server's IP.",
     ),
     port: int = typer.Option(  # pylint: disable=(unused-argument
-        8909,
+        DEEPL_PORT,
         "--port",
         "-p",
         help="Internal deepl server's port, change if the default it occupied.",
@@ -271,12 +353,8 @@ def main(
 
     logger.debug(f"Now in {os.getcwd()}")
 
+    # start httpserver for tailwindcss/daisyui/ag-grid/fontawesome etc
     Thread(target=httpserver, daemon=True).start()
-
-    # restore
-    # os.chdir(cwd)
-    logger.debug(f"now in {Path.cwd()}")
-
     # wait for httpserver to be ready
     while True:
         if hasattr(httpserver, "port"):
@@ -286,6 +364,24 @@ def main(
             logger.debug(f"cwd paths exist: {[elm.exists() for elm in ns.cwd]}")
             break
         sleep(0.1)
+
+    # start deepl server, starting port: ns.deepl_port
+    start_port = ns.deepl_port
+    for offset in range(5):
+        port = start_port + offset
+        logger.debug(f"attempt {offset + 1} to start deepl-server at port {port}")
+        kwargs = dict(port=port)
+        proc_deepl = Process(target=run_uvicorn, kwargs=kwargs)
+        try:
+            proc_deepl.start()
+            # update ns
+            ns.deepl_port = port
+            break
+        except Exception as exc:
+            logger.error(f"Faild: {exc}")
+            continue
+    else:
+        raise SystemError("Tried 5 times, something is probably wrong...")
 
     # http://localhost:8909/ag-grid-community.js
     # loginhtml = login_html(f"http://localhost:{httpserver.port}/ag-grid-community.js")
@@ -306,7 +402,8 @@ def main(
     MyWindow.bind("repolink", slot_repolink)
     MyWindow.bind("qqgrlink", slot_qqgrlink)
 
-    MyWindow.bind("loadfile", slot_loadfile)
+    MyWindow.bind("loadFile", slot_loadfile)
+    MyWindow.bind("saveFile", slot_savefile)
 
     # Show the window
     # MyWindow.show(login_html)
@@ -315,9 +412,11 @@ def main(
     MyWindow.show(tab1_html())
 
     # Wait until all windows are closed
-    webui.wait()
-
-    print("Bye.")
+    try:
+        webui.wait()
+    finally:
+        proc_deepl.kill()  # not necessary
+        type.echo("Bye.")
 
 
 if __name__ == "__main__":

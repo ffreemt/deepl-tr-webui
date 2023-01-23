@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "deepl-tr"
-version = "0.1.0-alpha.0"
+version = "0.1.0a1"
 description = "deepl translate using deepl-fastapi and webui2"
 authors = ["ffreemt"]
 license = "MIT"

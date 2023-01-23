@@ -6,14 +6,14 @@
   <div class="flex-1">
     <div class="tabs">
 
-      <a id="tab1" class={% if atab|int == 1 %} "tab tab-lifted tab-active"> {% else %} "tooltip tooltip-right tab tab-lifted" data-tip="Load a text file or paste text"> {% endif %}
+      <a id="tab1" class={% if atab|int == 1 %} "tab tab-lifted tab-active"> {% else %} "tooltip tooltip-right tab tab-lifted" data-tip="Load a text file"> {% endif %}
         <span style="font-size: 25px; color: Tomato;">
           <i class="fa fa-file-alt"></i>
         </span>
           <!-- <button id="filebtn"><i class="fa fa-file-alt"></i>Normal</button> -->
       </a>
 
-      <a id="tab2" class={% if atab|int == 2 %} "tab tab-lifted tab-active"> {% else %} "tooltip tooltip-right tab tab-lifted" data-tip="Edit when necesssary"> {% endif %}
+      <a id="tab2" class={% if atab|int == 2 %} "tab tab-lifted tab-active"> {% else %} "tooltip tooltip-right tab tab-lifted" data-tip="Translate and edit when necesssary"> {% endif %}
         <span style="font-size: 25px; color: Tomato;">
           <i class="fas fa-edit"></i>
         </span>
