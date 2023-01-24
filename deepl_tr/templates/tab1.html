@@ -18,7 +18,7 @@
     <button id="loadFile" class="btn btn-accent"> Load </button>
   </div>
    <div class="indicator-item indicator-bottom">
-    <button onclick="onBtnUpdate()" id="saveFile" class="btn btn-accent"> SaveEdit </button>
+    <button onclick="onBtnUpdate()" id="saveEdit1" class="btn btn-accent"> SaveEdit </button>
   </div>
   <div class="form-control w-41 bg-red-50">
     <label class="label">
@@ -28,7 +28,7 @@
     <input id="filename" name="filename" type="file" class="file-input file-input-ghost file-input-accent file-input-bordered w-full max-w-xs" accept=".txt, .md"/>
   </div>
 </div>
-  <textarea style="display:{{ 'inline' and ns.debug or 'none' }}" id="csvResult1">Click the SAVEEDIT button to view exported CSV here</textarea>
+  <textarea style="display:{{ 'inline' and ns.debug or 'none' }}" id="csvResult1" class="resize">Click the SAVEEDIT button to view exported CSV here</textarea>
 </div>
 
 <!-- most recent file first -->

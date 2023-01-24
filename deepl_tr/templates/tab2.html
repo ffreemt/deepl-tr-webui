@@ -8,9 +8,19 @@
 </div>
 
 <div class="px-5 flex flex-row gap gap-1">
-      <button onclick="onBtnUpdate()"  id="saveFile2" class="btn btn-accent"> SaveEdit </button>
-      <button id="saveCsv2" class="btn btn-accent"> SaveCSV </button>
-<textarea style="display:{{ 'inline' and ns.debug or 'none' }}" id="csvResult2">Click the SAVE button to view exported CSV here</textarea>
+  <select id="tgtLang" class="select select-info w-35 max-w-xs">
+    <option disabled>Select tgt-lang</option>
+    <option selected>To Chinese</option>
+    <option>To English</option>
+    <option>To German</option>
+    <option>To French</option>
+    <option>To Italian</option>
+    <option>To Japanese</option>
+  </select>
+  <button id="translate" class="btn btn-accent"> Translate </button>
+  <button onclick="onBtnUpdate()" id="saveEdit2" class="btn btn-accent"> SaveEdit </button>
+  <button id="saveCsv2" class="btn btn-accent"> SaveCSV </button>
+<textarea style="display:{{ 'inline' and ns.debug or 'none' }}" id="csvResult2" class="resize">Click the SAVE button to view exported CSV here</textarea>
 </div>
 
 {% include "aggrid-table2.html" %}

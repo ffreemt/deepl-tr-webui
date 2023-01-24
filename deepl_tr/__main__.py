@@ -24,6 +24,7 @@ from deepl_tr import __version__, deepl_tr
 from .httpserver import httpserver  # default port 8909
 from .loadtext import loadtext  # default port 8909
 from .list2csv import list2csv, csv2list
+from .lang_pairs import lang_pairs
 
 row_data1 = [
     {"text": ""},
@@ -55,6 +56,7 @@ ns = SimpleNamespace(
     text2="",
     list1=[[]],
     list2=[[]],
+    to_lang="zh",
     debug=False,
 )
 if set_loglevel() <= 10:
@@ -115,6 +117,7 @@ def dashboard_html() -> str:
     return _.render(ns=ns)
 
 
+_ = '''
 def check_the_password(evt: webui.event):
     """Check password.
 
@@ -142,6 +145,7 @@ def check_the_password(evt: webui.event):
         evt.window.run_js(
             " document.getElementById('err').innerHTML = 'Sorry. Wrong password'; "
         )
+# '''
 
 
 def close_the_application(evt: webui.event):
@@ -194,6 +198,7 @@ def slot_tab2(evt: webui.event):
         ns.active_tab = 2
     except Exception as exc:
         logger.error(exc)
+        logger.exception(exc)
 
 
 def slot_tab3(evt: webui.event):
@@ -271,19 +276,28 @@ def slot_loadfile(evt: webui.event):
     ns.text = loadtext(filepath)
     logger.debug(f"ns.text[:80]: {ns.text[:180]}")
 
-    _ = [elm for elm in ns.text.splitlines() if elm.strip()]
+    lines = [elm for elm in ns.text.splitlines() if elm.strip()]
 
     # prep for #csvResult1
-    ns.list1 = csv2list(list2csv(_))
+    ns.list1 = csv2list(list2csv(lines))
     ns.list1.insert(0, ["text"])
 
-    ns.row_data1 = [dict([elm]) for elm in zip_longest([], _, fillvalue="text")]
+    # ns.row_data1 = [dict([elm]) for elm in zip_longest([], lines, fillvalue="text")]
+    ns.row_data1 = [dict(zip(ns.list1[0], elm)) for elm in ns.list1[1:]]
+
+    ns.list2 = [elm + [''] for elm in ns.list1]
+    ns.list2.insert(0, ['text', 'text-tr'])
+    # ns.row_data2 = [dict(zip(['text', 'text-tr'], elm0)) for elm0 in ns.list2[1:]]
+    ns.row_data2 = [dict(zip(ns.list2[0], elm)) for elm in ns.list2[1:]]
 
     evt.window.show(tab1_html())
 
+    _ = ''' does not quite work
     evt.window.run_js(
         f"""document.querySelector('#csvResult1').value = {list2csv(ns.list1)}"""
     )
+    # '''
+
     evt.window.run_js(
         f"""document.getElementById('log').innerHTML = 'ns.text[:180]: {ns.text[:180]}';"""
     )
@@ -299,8 +313,14 @@ def slot_loadfile(evt: webui.event):
     logger.debug(f"filepath: {filepath}")
 
 
-def slot_savefile(evt: webui.event):
-    """Handle saveFile button, update ns.list1 with gridOptions.api.getDataAsCsv()."""
+def slot_saveedit1(evt: webui.event):
+    """Handle id:saveFile SaveEdit button in tab1.html.
+
+    Update ns.list1 with gridOptions.api.getDataAsCsv().
+        ns.row_data1
+        ns.list2
+        ns.row_data2
+    """
     # save tab1 rg-grid data (if modified) to ns.row_data1/ns.list1 #csvResult1
     #       possible alternative if can be done: save to localstorage?
     #  https://www.ag-grid.com/javascript-data-grid/csv-export/
@@ -318,8 +338,40 @@ def slot_savefile(evt: webui.event):
 
     # update ns.row_data1/ns.list1
     ns.list1 = csv2list(as_csv.data)[1:]  # sans the first entry (header)
-    _ = zip_longest([], [elm[0] for elm in ns.list1], fillvalue="text")
-    ns.row_data1 = [dict([elm]) for elm in _]
+
+    # _ = zip_longest([], [elm[0] for elm in ns.list1], fillvalue="text")
+    # ns.row_data1 = [dict([elm]) for elm in _]
+    ns.row_data1 = [dict(zip(ns.list1[0], elm)) for elm in ns.list1[1:]]
+
+    ns.list2 = [elm + [''] for elm in ns.list1]
+    ns.list2.insert(0, ['text', 'text-tr'])
+    # ns.row_data2 = [dict(zip(['text', 'text-tr'], elm0)) for elm0 in ns.list2[1:]]
+    ns.row_data2 = [dict(zip(ns.list2[0], elm)) for elm in ns.list2[1:]]
+
+def slot_saveedit2(evt: webui.event):
+    """Handle id:saveFile2 SaveEdit button in tab2.html, update ns.list1 with gridOptions.api.getDataAsCsv()."""
+    logger.debug("saveEdit clicked in tab2.html")
+
+
+def slot_translate(evt: webui.event) -> str:
+    """Handle #translate click.
+
+    Update ns.row_data1, ns.list2
+    """
+    logger.debug(" translate btn clicked ")
+    try:
+        res = evt.window.run_js(
+            f"""return document.querySelector("#tgtLang").value;"""
+        )
+        if res.error is True:
+            logger.error("JavaScript Error: " + res.data)
+            return
+
+        to_lang = lang_pairs.get(res.data)
+    except Exception as exc:
+        logger.error(exc)
+        to_lang = "zh"
+    logger.debug(f" to_lang: {to_lang}")
 
 
 @app.command()
@@ -373,7 +425,7 @@ def main(
         kwargs = dict(port=port)
         proc_deepl = Process(target=run_uvicorn, kwargs=kwargs)
         try:
-            proc_deepl.start()
+            # proc_deepl.start()  # TODO enable
             # update ns
             ns.deepl_port = port
             break
@@ -391,7 +443,7 @@ def main(
     MyWindow = webui.window()
 
     # Bind am HTML element ID with a python function
-    MyWindow.bind("CheckPassword", check_the_password)
+    # MyWindow.bind("CheckPassword", check_the_password)
     MyWindow.bind("Exit", close_the_application)
 
     MyWindow.bind("tab1", slot_tab1)
@@ -403,7 +455,10 @@ def main(
     MyWindow.bind("qqgrlink", slot_qqgrlink)
 
     MyWindow.bind("loadFile", slot_loadfile)
-    MyWindow.bind("saveFile", slot_savefile)
+    MyWindow.bind("saveEdit1", slot_saveedit1)
+
+    MyWindow.bind("saveEdit2", slot_saveedit2)
+    MyWindow.bind("translate", slot_translate)
 
     # Show the window
     # MyWindow.show(login_html)
@@ -415,8 +470,9 @@ def main(
     try:
         webui.wait()
     finally:
-        proc_deepl.kill()  # not necessary
-        type.echo("Bye.")
+        if proc_deepl.is_alive():
+            proc_deepl.kill()  # not necessary
+        typer.echo("Bye.")
 
 
 if __name__ == "__main__":

@@ -14,7 +14,7 @@ x (not ready yet) pip install deepl-tr
 
 ## Use it
 ```bash
-python -m deepl-tr
+python -m deepl_tr
 
 # or
 deepl-tr
