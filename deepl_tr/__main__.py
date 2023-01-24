@@ -6,7 +6,7 @@ import os
 import sys
 from pathlib import Path
 from threading import Thread
-from time import sleep
+from time import sleep, time
 from types import SimpleNamespace
 from typing import Optional
 from jinja2 import Environment, FileSystemLoader
@@ -23,21 +23,18 @@ from deepl_fastapi.run_uvicorn import run_uvicorn
 from deepl_tr import __version__, deepl_tr
 from .httpserver import httpserver  # default port 8909
 from .loadtext import loadtext  # default port 8909
-from .list2csv import list2csv, csv2list
+from .list2csv import list2csv, csv2list, list2rowdata
 from .lang_pairs import lang_pairs
 
-row_data1 = [
-    {"text": ""},
-]
-row_data2 = [
-    {"text": ""},
-    {"text-tr": ""},
-]
 rowData = [
     {"text1": 'Toyota', "text2": 'Celica', "metric": ""},
     {"text1": 'Ford', "text2": 'Mondeo', "metric": ""},
     {"text1": 'Porsche', "text2": 'Boxter', "metric": ""}
 ]
+row_data1 = [
+    {"text": ""},
+]
+row_data2 = [{'text': '', 'text-tr': ''}]
 
 HTTPSERVER_PORT = 8909
 DEEPL_PORT = 9909
@@ -54,10 +51,11 @@ ns = SimpleNamespace(
     cwd=[Path("~").expanduser() / "Documents"],
     text="",
     text2="",
-    list1=[[]],
-    list2=[[]],
+    list1=[['text'], [""]],
+    list2=[['text', 'text-tr'], ["", ""]],
     to_lang="zh",
     debug=False,
+    timestamp=0.0,
 )
 if set_loglevel() <= 10:
     ns.debug = True
@@ -154,19 +152,40 @@ def close_the_application(evt: webui.event):
     webui.exit()
 
 
+def cond_delay(delay=2.5):
+    """Delay conditionally for a few secs to prevent quick swap of html tab."""
+    flag = False
+    while time() - ns.timestamp < 2.5:
+        sleep(1e-2)
+        print('-', end='', flush=True)
+        flag = True
+    if flag:
+        print('-', flush=True)
+    ns.timestamp = time()
+
+
 def slot_tab1(evt: webui.event):
     """Reveive signal tab1."""
     logger.debug(" tab1 clicked...")
+    logger.debug(f" ns.list1: {ns.list1}")
+    logger.debug(f" ns.row_data1: {ns.row_data1}")
+
+    # will this prevent "access violation reading" crash?
+    cond_delay()
+
     if ns.active_tab == 1:
         # already in tab1, do nothing
         return
 
     # save tab2 rg-grid data (if modified) to ns.row_data2
 
-
     logger.debug("\t Update display V to tab1 ")
+
     try:
-        evt.window.show(tab1_html())
+        _ = tab1_html()
+        # check timetamp to prevent 'access violation reading'?
+
+        evt.window.show(_)
         ns.active_tab = 1
     except Exception as exc:
         logger.error(exc)
@@ -184,6 +203,12 @@ def slot_tab1(evt: webui.event):
 def slot_tab2(evt: webui.event):
     """Reveive signal tab1."""
     logger.debug(" tab2 clicked...")
+
+    logger.debug(f" ns.list2: {ns.list2}")
+    logger.debug(f" ns.row_data2: {row_data2}")
+
+    cond_delay()
+
     if ns.active_tab == 2:
         # tab2 alreay active, do nothing
         row_data = evt.window.run_js(
@@ -193,8 +218,10 @@ def slot_tab2(evt: webui.event):
         return
 
     logger.debug(f"\t Update display V to tab2, ns: {ns} ")
+
     try:
-        evt.window.show(tab2_html())
+        _ = tab2_html()
+        evt.window.show(_)
         ns.active_tab = 2
     except Exception as exc:
         logger.error(exc)
@@ -204,12 +231,17 @@ def slot_tab2(evt: webui.event):
 def slot_tab3(evt: webui.event):
     """Reveive signal tab1."""
     logger.debug(" tab3 clicked...")
+
+    cond_delay()
+
     if ns.active_tab == 3:
         return
 
     logger.debug("\t Update display V to tab3 ")
+
     try:
-        evt.window.show(tab3_html())
+        _ = tab3_html()
+        evt.window.show(_)
         ns.active_tab = 3
     except Exception as exc:
         logger.error(exc)
@@ -218,6 +250,9 @@ def slot_tab3(evt: webui.event):
 def slot_tab4(evt: webui.event):
     """Reveive signal tab4."""
     logger.debug(" tab4 clicked... exiting")
+
+    cond_delay()
+
     del evt
     webui.exit()
 
@@ -247,6 +282,8 @@ def slot_loadfile(evt: webui.event):
         return
 
     logger.debug(f" cwd: {Path.cwd()}")
+    logger.debug(f" res: {res}")
+    logger.debug(f" dir(res): {dir(res)}")
 
     filename = res.data
     logger.debug(f"filename: {filename}")
@@ -282,15 +319,27 @@ def slot_loadfile(evt: webui.event):
     ns.list1 = csv2list(list2csv(lines))
     ns.list1.insert(0, ["text"])
 
+    logger.debug(f" ns.list1: {ns.list1}")
+    logger.debug(f" ns.row_data1: {ns.row_data1}")
+
     # ns.row_data1 = [dict([elm]) for elm in zip_longest([], lines, fillvalue="text")]
     ns.row_data1 = [dict(zip(ns.list1[0], elm)) for elm in ns.list1[1:]]
 
-    ns.list2 = [elm + [''] for elm in ns.list1]
+    # update ns.list2 ns.row_data2
+    ns.list2 = [elm + [''] for elm in ns.list1[1:]]
     ns.list2.insert(0, ['text', 'text-tr'])
     # ns.row_data2 = [dict(zip(['text', 'text-tr'], elm0)) for elm0 in ns.list2[1:]]
     ns.row_data2 = [dict(zip(ns.list2[0], elm)) for elm in ns.list2[1:]]
 
-    evt.window.show(tab1_html())
+    logger.debug(f" ns.list2: {ns.list2}")
+    logger.debug(f" ns.row_data2: {ns.row_data2}")
+
+    try:
+        _ = tab1_html()
+        evt.window.show(_)
+    except Exception as exc:
+        logger.exception(exc)
+        return
 
     _ = ''' does not quite work
     evt.window.run_js(
@@ -334,10 +383,12 @@ def slot_saveedit1(evt: webui.event):
     if as_csv.error is True:
         logger.error(f" as_csv.error: {as_csv.data}")
         return
-    logger.debug(as_csv.data[:10])
+    logger.debug(as_csv.data)
 
     # update ns.row_data1/ns.list1
-    ns.list1 = csv2list(as_csv.data)[1:]  # sans the first entry (header)
+    ns.list1 = csv2list(as_csv.data)
+
+    logger.debug(f"ns.list1: {ns.list1}")
 
     # _ = zip_longest([], [elm[0] for elm in ns.list1], fillvalue="text")
     # ns.row_data1 = [dict([elm]) for elm in _]
@@ -347,6 +398,7 @@ def slot_saveedit1(evt: webui.event):
     ns.list2.insert(0, ['text', 'text-tr'])
     # ns.row_data2 = [dict(zip(['text', 'text-tr'], elm0)) for elm0 in ns.list2[1:]]
     ns.row_data2 = [dict(zip(ns.list2[0], elm)) for elm in ns.list2[1:]]
+
 
 def slot_saveedit2(evt: webui.event):
     """Handle id:saveFile2 SaveEdit button in tab2.html, update ns.list1 with gridOptions.api.getDataAsCsv()."""
