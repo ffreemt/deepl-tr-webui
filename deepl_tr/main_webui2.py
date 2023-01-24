@@ -5,12 +5,13 @@
 import os
 import sys
 from pathlib import Path
-from time import sleep
 from threading import Thread
-from webui import webui
-from loguru import logger
+from time import sleep
 from types import SimpleNamespace
+
+from loguru import logger
 from set_loglevel import set_loglevel
+from webui import webui
 
 from .httpserver import httpserver  # default port 8909
 
@@ -73,7 +74,8 @@ const columnDefs = [
 
 # HTML
 def login_html(url=URL) -> str:
-    return (f"""
+    return (
+        f"""
 <!DOCTYPE html>
 <html>
     <head>
@@ -167,7 +169,7 @@ def login_html(url=URL) -> str:
     <script src="{url}"></script>
     </head>
     """
-    f"""
+        f"""
     <body>
         <!--div class="pros p-2 mx-auto"-->
         <div class="container p-1 mx-auto flex flex-col">
@@ -246,16 +248,19 @@ def login_html(url=URL) -> str:
     </div>
     </body>
 </html>
-""")
+"""
+    )
+
 
 def dashboard_html(url=URL) -> str:
-    return (f"""
+    return (
+        f"""
 <!DOCTYPE html>
 <html>
     <head>
         <title>Dashboard</title>
         <script src="{url}"></script>"""
-    """<style>
+        """<style>
             body {
                 color: white;
                 background: #0F2027;
@@ -267,7 +272,7 @@ def dashboard_html(url=URL) -> str:
             }
         </style>
     </head>"""
-    f"""<body>
+        f"""<body>
         <h1>Welcome !</h1>
         <br>
          {aggrid_table}
@@ -275,11 +280,13 @@ def dashboard_html(url=URL) -> str:
     <button id="Exit">Exit</button>
     </body>
 </html>
-""")
+"""
+    )
+
 
 # This function get called every time the user click on "CheckPassword"
 # MyWindow.bind('CheckPassword', check_the_password)
-def check_the_password(e : webui.event):
+def check_the_password(e: webui.event):
     # Run JavaScript to get the password
     res = e.window.run_js("""return document.getElementById("MyInput").value""")
 
@@ -298,10 +305,12 @@ def check_the_password(e : webui.event):
         e.window.show(dashboard_html(url))
     else:
         print("Wrong password: " + res.data)
-        e.window.run_js(" document.getElementById('err').innerHTML = 'Sorry. Wrong password'; ")
+        e.window.run_js(
+            " document.getElementById('err').innerHTML = 'Sorry. Wrong password'; "
+        )
 
 
-def close_the_application(e : webui.event):
+def close_the_application(e: webui.event):
     webui.exit()
 
 
@@ -315,7 +324,7 @@ def main():
     logger.debug(f"Now in {os.getcwd()}")
 
     Thread(target=httpserver, daemon=True).start()
-    
+
     # restore
     # os.chdir(cwd)
     logger.debug(f"now in {Path.cwd()}")
@@ -335,8 +344,8 @@ def main():
     MyWindow = webui.window()
 
     # Bind am HTML element ID with a python function
-    MyWindow.bind('CheckPassword', check_the_password)
-    MyWindow.bind('Exit', close_the_application)
+    MyWindow.bind("CheckPassword", check_the_password)
+    MyWindow.bind("Exit", close_the_application)
 
     # Show the window
     # MyWindow.show(login_html)
@@ -345,7 +354,8 @@ def main():
     # Wait until all windows are closed
     webui.wait()
 
-    print('Bye.')
+    print("Bye.")
+
 
 if __name__ == "__main__":
     main()

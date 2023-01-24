@@ -1,7 +1,8 @@
 """Convert a list to csv string and a string to list, respectively."""
-from typing import List, Union
-import io
 import csv
+import io
+from typing import List, Union
+
 from loguru import logger
 
 
@@ -24,7 +25,7 @@ def list2csv(data: List[Union[str, List[str]]]) -> str:
     data = [[elm] if isinstance(elm, str) else elm for elm in data]
     output = io.StringIO()
     try:
-        writer = csv.writer(output, delimiter=',')
+        writer = csv.writer(output, delimiter=",")
         writer.writerows(data)
     except Exception as exc:
         logger.error(exc)

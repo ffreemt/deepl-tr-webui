@@ -4,37 +4,38 @@
 # pip install --upgrade webui2
 import os
 import sys
+import webbrowser
+from itertools import zip_longest
+from multiprocessing import Process
 from pathlib import Path
 from threading import Thread
 from time import sleep, time
 from types import SimpleNamespace
 from typing import Optional
-from jinja2 import Environment, FileSystemLoader
-from itertools import zip_longest
-from multiprocessing import Process
 
 import typer
-import webbrowser
-from loguru import logger
-from webui import webui
-from set_loglevel import set_loglevel
 from deepl_fastapi.run_uvicorn import run_uvicorn
+from jinja2 import Environment, FileSystemLoader
+from loguru import logger
+from set_loglevel import set_loglevel
+from webui import webui
 
 from deepl_tr import __version__, deepl_tr
+
 from .httpserver import httpserver  # default port 8909
-from .loadtext import loadtext  # default port 8909
-from .list2csv import list2csv, csv2list, list2rowdata
 from .lang_pairs import lang_pairs
+from .list2csv import csv2list, list2csv, list2rowdata
+from .loadtext import loadtext  # default port 8909
 
 rowData = [
-    {"text1": 'Toyota', "text2": 'Celica', "metric": ""},
-    {"text1": 'Ford', "text2": 'Mondeo', "metric": ""},
-    {"text1": 'Porsche', "text2": 'Boxter', "metric": ""}
+    {"text1": "Toyota", "text2": "Celica", "metric": ""},
+    {"text1": "Ford", "text2": "Mondeo", "metric": ""},
+    {"text1": "Porsche", "text2": "Boxter", "metric": ""},
 ]
 row_data1 = [
     {"text": ""},
 ]
-row_data2 = [{'text': '', 'text-tr': ''}]
+row_data2 = [{"text": "", "text-tr": ""}]
 
 HTTPSERVER_PORT = 8909
 DEEPL_PORT = 9909
@@ -42,8 +43,6 @@ URL = f"http://localhost:{HTTPSERVER_PORT}/ag-grid-community.js"
 ns = SimpleNamespace(
     httpserver_port=HTTPSERVER_PORT,
     deepl_port=DEEPL_PORT,
-    row_data1=row_data1,
-    row_data2=row_data2,
     # rowData=rowData,
     active_tab=1,
     version=__version__,
@@ -51,8 +50,10 @@ ns = SimpleNamespace(
     cwd=[Path("~").expanduser() / "Documents"],
     text="",
     text2="",
-    list1=[['text'], [""]],
-    list2=[['text', 'text-tr'], ["", ""]],
+    list1=[["text"], [""]],
+    list2=[["text", "text-tr"], ["", ""]],
+    row_data1=row_data1,
+    row_data2=row_data2,
     to_lang="zh",
     debug=False,
     timestamp=0.0,
@@ -157,10 +158,10 @@ def cond_delay(delay=2.5):
     flag = False
     while time() - ns.timestamp < 2.5:
         sleep(1e-2)
-        print('-', end='', flush=True)
+        print("-", end="", flush=True)
         flag = True
     if flag:
-        print('-', flush=True)
+        print("-", flush=True)
     ns.timestamp = time()
 
 
@@ -326,8 +327,8 @@ def slot_loadfile(evt: webui.event):
     ns.row_data1 = [dict(zip(ns.list1[0], elm)) for elm in ns.list1[1:]]
 
     # update ns.list2 ns.row_data2
-    ns.list2 = [elm + [''] for elm in ns.list1[1:]]
-    ns.list2.insert(0, ['text', 'text-tr'])
+    ns.list2 = [elm + [""] for elm in ns.list1[1:]]  # remove list1's header
+    ns.list2.insert(0, ["text", "text-tr"])
     # ns.row_data2 = [dict(zip(['text', 'text-tr'], elm0)) for elm0 in ns.list2[1:]]
     ns.row_data2 = [dict(zip(ns.list2[0], elm)) for elm in ns.list2[1:]]
 
@@ -354,7 +355,9 @@ def slot_loadfile(evt: webui.event):
     return
 
     # const path = (window.URL || window.webkitURL).createObjectURL(file);
-    res = evt.window.run_js("""const file = document.getElementById("filename").value; console.log("file: ", file); return (window.URL || window.webkitURL).createObjectURL(file)""")
+    res = evt.window.run_js(
+        """const file = document.getElementById("filename").value; console.log("file: ", file); return (window.URL || window.webkitURL).createObjectURL(file)"""
+    )
     if res.error is True:
         logger.error("JavaScript Error: " + res.data)
         return
@@ -377,9 +380,7 @@ def slot_saveedit1(evt: webui.event):
     # assumc SAVE button presssed, ag-grid table1 save to #csvResult1
 
     # gridOptions.api.getDataAsCsv(): '"text"\r\n"a"'
-    as_csv = evt.window.run_js(
-        f"""return gridOptions.api.getDataAsCsv();"""
-    )
+    as_csv = evt.window.run_js(f"""return gridOptions.api.getDataAsCsv();""")
     if as_csv.error is True:
         logger.error(f" as_csv.error: {as_csv.data}")
         return
@@ -394,8 +395,8 @@ def slot_saveedit1(evt: webui.event):
     # ns.row_data1 = [dict([elm]) for elm in _]
     ns.row_data1 = [dict(zip(ns.list1[0], elm)) for elm in ns.list1[1:]]
 
-    ns.list2 = [elm + [''] for elm in ns.list1]
-    ns.list2.insert(0, ['text', 'text-tr'])
+    ns.list2 = [elm + [""] for elm in ns.list1[1:]]  # remove list1's header
+    ns.list2.insert(0, ["text", "text-tr"])
     # ns.row_data2 = [dict(zip(['text', 'text-tr'], elm0)) for elm0 in ns.list2[1:]]
     ns.row_data2 = [dict(zip(ns.list2[0], elm)) for elm in ns.list2[1:]]
 
@@ -412,9 +413,7 @@ def slot_translate(evt: webui.event) -> str:
     """
     logger.debug(" translate btn clicked ")
     try:
-        res = evt.window.run_js(
-            f"""return document.querySelector("#tgtLang").value;"""
-        )
+        res = evt.window.run_js(f"""return document.querySelector("#tgtLang").value;""")
         if res.error is True:
             logger.error("JavaScript Error: " + res.data)
             return

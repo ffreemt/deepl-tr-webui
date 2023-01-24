@@ -17,9 +17,11 @@ refer to load_paras.py
 """
 # pylint: disable=line-too-long, unused-variable, unused-import
 
-from typing import List, Optional, Union  # noqa
 from pathlib import Path
+from typing import List, Optional, Union  # noqa
+
 from install import install
+
 try:
     import cchardet
 except ModuleNotFoundError:
@@ -101,10 +103,7 @@ def test1():
 
 def testgb():
     r"""Tests shuangyu_ku\txt-books\19部世界名著中英文对照版TXT."""
-    file = (
-        r"C:\dl\Dropbox\shuangyu_ku\txt-books\19部世界名著中英文对照版TXT"
-        r"\爱丽丝漫游奇境记.txt"
-    )
+    file = r"C:\dl\Dropbox\shuangyu_ku\txt-books\19部世界名著中英文对照版TXT" r"\爱丽丝漫游奇境记.txt"
     text = loadtext(file)
     if text:
         # assert len(text) == 190913

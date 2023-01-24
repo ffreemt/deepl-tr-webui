@@ -1,12 +1,13 @@
 """Start http.server using socketserver.TCPServer."""
 # pylint: disable=invalid-name, broad-except
-import os
 import http.server
+import os
 import socketserver
 import threading
-
 from pathlib import Path
+
 from loguru import logger
+
 
 class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def end_headers(self):
