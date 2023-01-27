@@ -1,0 +1,13 @@
+    <ul class="steps steps-vertical w-full">
+     <li data-content="?" class="step"><span class="text-left">Use as a local deepl.com REST API server at port {{ ns.deepl_port }} (a copy of deepl-fastapi is running in the background); browse <a id="deeplDocsLink" class="link link-primary">http://localhost:{{ ns.deepl_port }}/docs</a> for details.</span>
+
+
+       <textarea class="resize mx-10 w-96 h-80 textarea textarea-bordered" placeholder="sample">import requests
+headers = {'accept': 'application/json', 'Content-Type': 'application/json',}
+json_data = {'text': 'We want to test the interface. Can we?', 'to_lang': 'zh',}
+response = requests.post('http://localhost:{{ ns.deepl_port }}/text/', headers=headers, json=json_data)
+print(response.json())
+# {'q': {'text': 'We want to test the interface. Can we?', 'from_lang': None, 'to_lang': 'zh', 'description': None}, 'result': '我们想测试一下界面。我们可以吗？'} </textarea>
+
+      </li>
+    </ul>

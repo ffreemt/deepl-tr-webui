@@ -8,6 +8,7 @@
 </div>
 
 <div class="px-5 flex flex-row gap gap-1">
+  <div data-tip="target language" class="tooltip tooptip-right">
   <select id="tgtLang" class="select select-info w-35 max-w-xs">
     <option disabled>Select tgt-lang</option>
     <option selected>To Chinese</option>
@@ -16,11 +17,20 @@
     <option>To French</option>
     <option>To Italian</option>
     <option>To Japanese</option>
-  </select>
-  <button onclick="onBtnUpdate()" id="saveEdit2" class="btn btn-accent"> SaveEdit </button>
-  <button id="translate" class="btn btn-accent"> Translate </button>
-  <button id="saveCsv2" class="btn btn-accent"> SaveCSV </button>
-<textarea style="display:{{ 'inline' and ns.debug or 'none' }}" id="csvResult2" class="resize">Click the SAVE button to view exported CSV here</textarea>
+  </select></div>
+  <span data-tip="to effect change after editing text or text-tr" class="tooltip tooltip-right">
+    <button onclick="onBtnUpdate()" id="saveEdit2" class="btn btn-accent"> SaveEdit </button>
+  </span>
+  <span data-tip="a headless browser will be used to talk to deepl.com, in effect equivalent to launching a browser and browsing deepl.com, hence, indiscriminate use may result in your IP being banned by deepl.com." class="tooltip tooltip-bottom">
+    <button id="translate" class="btn btn-accent"> Translate </button>
+  </span>
+  <span data-tip="save a two-column csv file on disk" class="tooltip tooltip-right">
+    <button id="saveCsv2" class="btn btn-accent opacity-50 cursor-not-allowed"> SaveCSV </button>
+  </span>
+  <textarea style="display:{{ 'inline' and ns.debug or 'none' }}" id="csvResult2" class="resize">
+    Click the SAVE button to view exported CSV here
+  </textarea>
+
 </div>
 
 {% include "aggrid-table2.html" %}

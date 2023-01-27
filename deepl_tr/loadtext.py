@@ -17,25 +17,11 @@ refer to load_paras.py
 """
 # pylint: disable=line-too-long, unused-variable, unused-import
 
+import pytest
 from pathlib import Path
 from typing import List, Optional, Union  # noqa
 
-from install import install
-
-try:
-    import cchardet
-except ModuleNotFoundError:
-    install("cchardet")
-try:
-    import pytest
-except ModuleNotFoundError:
-    install("pytest")
-try:
-    from logzero import logger
-except ModuleNotFoundError:
-    install("logzero")
-
-# from detect_file import detect_file
+from charset_normalizer import detect
 
 
 def loadtext(filepath: Union[Path, str] = "") -> str:
@@ -50,10 +36,13 @@ def loadtext(filepath: Union[Path, str] = "") -> str:
         raise Exception(f" file [{filepath}] does not exist or is not a file.")
 
     # encoding = detect_file(filepath)
-    encoding = cchardet.detect(filepath.read_bytes()).get("encoding", "utf8")
+    _ = detect(filepath.read_bytes())
+    encoding = _.get("encoding")
 
     if encoding is None:
-        raise Exception("cchardet.detect says it's not a text file.")
+        # raise Exception(f"charset_normalizer.detect ({_}) says it's not a text file.")
+        logger.warning(f"charset_normalizer.detect ({_}) says it's not a text file. Resort to 'utf8' to proceed, expect problems")
+        encoding = "utf8"
 
     # cchardet: 'GB18030', no need for errors="ignore"
     try:

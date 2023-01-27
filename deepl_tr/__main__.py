@@ -1,4 +1,24 @@
-"""Wrap deepl-fastapi with webui2."""
+"""Wrap deepl-fastapi with webui2.
+
+headers = {
+    'accept': 'application/json',
+    'Content-Type': 'application/json',
+}
+json_data = {
+    'text': 'test string',
+    # 'from_lang': 'string',
+    'to_lang': 'zh',
+    'description': 'string',
+}
+response = requests.post('http://localhost:9909/text/', headers=headers, json=json_data)
+response.json()
+
+{'q': {'text': 'test string',
+  'from_lang': None,
+  'to_lang': 'zh',
+  'description': 'string'},
+ 'result': '测试字符串 测试串 测试线 检验串'}
+"""
 # pylint: disable=invalid-name
 # Install WebUI
 # pip install --upgrade webui2
@@ -13,14 +33,19 @@ from time import sleep, time
 from types import SimpleNamespace
 from typing import Optional
 
+import httpx
 import typer
-from deepl_fastapi.run_uvicorn import run_uvicorn
+
+# from deepl_fastapi.run_uvicorn import run_uvicorn
+from deepl_scraper_pp2.run_uvicorn import run_uvicorn
+
 from jinja2 import Environment, FileSystemLoader
 from loguru import logger
 from set_loglevel import set_loglevel
 from webui import webui
+# from deepl_scraper_pw import deepl_tr
 
-from deepl_tr import __version__, deepl_tr
+from deepl_tr import __version__
 
 from .httpserver import httpserver  # default port 8909
 from .lang_pairs import lang_pairs
@@ -39,6 +64,7 @@ row_data2 = [{"text": "", "text-tr": ""}]
 
 HTTPSERVER_PORT = 8909
 DEEPL_PORT = 9909
+
 URL = f"http://localhost:{HTTPSERVER_PORT}/ag-grid-community.js"
 ns = SimpleNamespace(
     httpserver_port=HTTPSERVER_PORT,
@@ -191,7 +217,7 @@ def slot_tab1(evt: webui.event):
     except Exception as exc:
         logger.error(exc)
         logger.exception(exc)
-        _ = '''  if Exception occurs, the following will wont help
+        _ = '''  if Exception occurs, the following wont help
         try:
             evt.window.run_js(
                 f"""document.getElementById('log').innerHTML = 'slot_tab1 exc: {exc}';"""
@@ -205,8 +231,8 @@ def slot_tab2(evt: webui.event):
     """Reveive signal tab1."""
     logger.debug(" tab2 clicked...")
 
-    logger.debug(f" ns.list2: {ns.list2}")
-    logger.debug(f" ns.row_data2: {row_data2}")
+    logger.debug(f" ns.list2: {ns.list2[:2]}")
+    logger.debug(f" ns.row_data2: {row_data2[:2]}")
 
     cond_delay()
 
@@ -218,14 +244,15 @@ def slot_tab2(evt: webui.event):
         )
         return
 
-    logger.debug(f"\t Update display V to tab2, ns: {ns} ")
+    # logger.debug(f"\t Update display V to tab2, ns: {ns} ")
+    logger.debug(f"\t Update display V to tab2 ")
 
     try:
         _ = tab2_html()
         evt.window.show(_)
         ns.active_tab = 2
     except Exception as exc:
-        logger.error(exc)
+        # logger.error(exc)
         logger.exception(exc)
 
 
@@ -260,15 +287,22 @@ def slot_tab4(evt: webui.event):
 
 def slot_repolink(evt: webui.event):
     """Handle id repolink."""
-    logger.debug(" repolink clicked...")
+    logger.debug(" repolink in tab3.html clicked...")
     _ = "https://github.com/ffreemt/deepl-tr-webui"
     webbrowser.open(_)
 
 
 def slot_qqgrlink(evt: webui.event):
     """Handle id repolink."""
-    logger.debug(" qqgrlink clicked...")
+    logger.debug(" qqgrlink in tab3.html clicked...")
     _ = "https://jq.qq.com/?_wv=1027&k=XRCplcfg"
+    webbrowser.open(_)
+
+
+def slot_deepl_docs_link(evt: webui.event):
+    """Handle id deeplDocsLink."""
+    logger.debug(" deeplDocsLink in tab3.html clicked...")
+    _ = f"http://localhost:{ns.deepl_port}/docs"
     webbrowser.open(_)
 
 
@@ -320,8 +354,8 @@ def slot_loadfile(evt: webui.event):
     ns.list1 = csv2list(list2csv(lines))
     ns.list1.insert(0, ["text"])
 
-    logger.debug(f" ns.list1: {ns.list1}")
-    logger.debug(f" ns.row_data1: {ns.row_data1}")
+    logger.debug(f" ns.list1: {ns.list1[:2]}")
+    logger.debug(f" ns.row_data1: {ns.row_data1[:2]}")
 
     # ns.row_data1 = [dict([elm]) for elm in zip_longest([], lines, fillvalue="text")]
     ns.row_data1 = [dict(zip(ns.list1[0], elm)) for elm in ns.list1[1:]]
@@ -332,8 +366,8 @@ def slot_loadfile(evt: webui.event):
     # ns.row_data2 = [dict(zip(['text', 'text-tr'], elm0)) for elm0 in ns.list2[1:]]
     ns.row_data2 = [dict(zip(ns.list2[0], elm)) for elm in ns.list2[1:]]
 
-    logger.debug(f" ns.list2: {ns.list2}")
-    logger.debug(f" ns.row_data2: {ns.row_data2}")
+    logger.debug(f" ns.list2: {ns.list2[:2]}")
+    logger.debug(f" ns.row_data2: {ns.row_data2[:2]}")
 
     try:
         _ = tab1_html()
@@ -348,12 +382,16 @@ def slot_loadfile(evt: webui.event):
     )
     # '''
 
-    evt.window.run_js(
-        f"""document.getElementById('log').innerHTML = 'ns.text[:180]: {ns.text[:180]}';"""
-    )
+    try:
+        evt.window.run_js(
+            f"""document.getElementById('log').innerHTML = 'ns.text[:180]: {ns.text[:180]}';"""
+        )
+    except Exception as exc:
+        logger.exception(exc)
 
     return
 
+    # code below not executed
     # const path = (window.URL || window.webkitURL).createObjectURL(file);
     res = evt.window.run_js(
         """const file = document.getElementById("filename").value; console.log("file: ", file); return (window.URL || window.webkitURL).createObjectURL(file)"""
@@ -366,7 +404,7 @@ def slot_loadfile(evt: webui.event):
 
 
 def slot_saveedit1(evt: webui.event):
-    """Handle id:saveFile SaveEdit button in tab1.html.
+    """Handle id:saveEdit1 SaveEdit button in tab1.html.
 
     Update ns.list1 with gridOptions.api.getDataAsCsv().
         ns.row_data1
@@ -402,8 +440,33 @@ def slot_saveedit1(evt: webui.event):
 
 
 def slot_saveedit2(evt: webui.event):
-    """Handle id:saveFile2 SaveEdit button in tab2.html, update ns.list1 with gridOptions.api.getDataAsCsv()."""
+    """Handle id:saveEdit2 SaveEdit button in tab2.html.
+
+    Update
+        ns.list2 with gridOptions.api.getDataAsCsv().
+        ns.row_data2
+
+        ns.list1
+        ns.row_data1
+    """
     logger.debug("saveEdit clicked in tab2.html")
+
+    as_csv = evt.window.run_js(f"""return gridOptions.api.getDataAsCsv();""")
+    if as_csv.error is True:
+        logger.error(f" as_csv.error: {as_csv.data}")
+        return
+    logger.debug(as_csv.data)
+    ns.list2 = csv2list(as_csv.data)
+    ns.row_data2 = list2rowdata(ns.list2)
+
+    # update ns.list1 with ([['text'] + ns.list2[1:][:, 0]) , ns.rowdata1
+    # take col0 of ns.list2[1:]: rotate ns.list2[1:] and wrap in [],
+    # and add header [["text"]]
+    ns.list1 = [['text']] + [[elm] for elm in [*zip(*ns.list2[1:])][0]]
+    ns.row_data1 = list2rowdata(ns.list1)
+
+    logger.debug(f" ns.list1[:3]: {ns.list1[:3]}")
+    logger.debug(f" ns.row_data1[:3]: {ns.row_data1[:3]}")
 
 
 def slot_translate(evt: webui.event) -> str:
@@ -411,7 +474,7 @@ def slot_translate(evt: webui.event) -> str:
 
     Update ns.row_data1, ns.list2
     """
-    logger.debug(" translate btn clicked ")
+    logger.debug(" translate btn in tab2.html clicked ")
     try:
         res = evt.window.run_js(f"""return document.querySelector("#tgtLang").value;""")
         if res.error is True:
@@ -424,6 +487,80 @@ def slot_translate(evt: webui.event) -> str:
         to_lang = "zh"
     logger.debug(f" to_lang: {to_lang}")
 
+    # rotate ns.list2[:1]
+    list2_r = [*zip(*ns.list2[1:])]
+
+    _ = "\n".join(list2_r[0])
+    logger.debug(_[:120])
+
+    try:
+        res = deepl_tr(_, to_lang=to_lang)
+    except Exception as exc:
+        # logger.error(exc)
+        logger.exception(exc)
+        res = str(exc)
+
+    if len(list2_r[0]) != len(res.splitlines()):
+        logger.debug(f" some problem (lengths not equal): {len(list2_r[0])}, {len(res.splitlines())}")
+    logger.debug(f"translated: {res[:120]}")
+
+    # replace the second col with text_tr
+    ns.list2 = [["text", "text-tr"]] + [*zip_longest(list2_r[0], res.splitlines(), fillvalue="")]
+    ns.row_data2 = list2rowdata(ns.list2)
+
+    logger.debug(f" ns.list2[:10]: {ns.list2[:3]}")
+    logger.debug(f" ns.row_data2[:10]: {ns.row_data2[:3]}")
+
+    try:
+        evt.window.run_js(
+            f"""document.getElementById('log').innerHTML = 'res[:120]: {res[:120]}';"""
+        )
+    except Exception as exc:
+        logger.exception(exc)
+
+    # update tab2 with translated text
+    try:
+        _ = tab2_html()
+        evt.window.show(_)
+        ns.active_tab = 2
+    except Exception as exc:
+        # logger.error(exc)
+        logger.exception(exc)
+
+
+def deepl_tr(
+    text: str,
+    from_lang: Optional[str] = "auto",
+    to_lang: Optional[str] = "zh",
+    timeout: float = 300.,   # for 5000 chars
+    host: Optional[str] = None,
+    port: Optional[int] = None,
+) -> str:
+    """Translate using deepl server at port."""
+    if from_lang is None:
+        from_lang = "auto"
+    if to_lang is None:
+        to_lang = "zh"
+    if port is None:
+        port = ns.deepl_port
+    if host is None:
+        host = "127.0.0.1"
+    url = f"http://{host}:{port}/text"
+    jdata = {
+        "text": text,
+        "from_lang": from_lang,
+        "to_lang": to_lang,
+    }
+    try:
+        # headers = {'accept': 'application/json', 'Content-Type': 'application/json',}
+        res = httpx.post(url, json=jdata, timeout=timeout, follow_redirects=True)
+        res.raise_for_status()
+    except Exception as exc:
+        logger.exception(exc)
+        res = {"result": str(exc)}
+
+    return res.json().get("result")
+
 
 @app.command()
 def main(
@@ -435,16 +572,6 @@ def main(
         help="Show version info and exit.",
         callback=_version_callback,
         is_eager=True,
-    ),
-    host: str = typer.Option(  # pylint: disable=(unused-argument
-        "127.0.0.1",
-        help="Internal deepl server's IP.",
-    ),
-    port: int = typer.Option(  # pylint: disable=(unused-argument
-        DEEPL_PORT,
-        "--port",
-        "-p",
-        help="Internal deepl server's port, change if the default it occupied.",
     ),
 ):
     """Wrap deepl-fastapi with webui2."""
@@ -468,6 +595,9 @@ def main(
             break
         sleep(0.1)
 
+    # sync deepl-scraper-pw not working
+    # switch to
+    # _ = """
     # start deepl server, starting port: ns.deepl_port
     start_port = ns.deepl_port
     for offset in range(5):
@@ -476,7 +606,7 @@ def main(
         kwargs = dict(port=port)
         proc_deepl = Process(target=run_uvicorn, kwargs=kwargs)
         try:
-            # proc_deepl.start()  # TODO enable
+            proc_deepl.start()  # enable deepl-fastapi
             # update ns
             ns.deepl_port = port
             break
@@ -485,6 +615,7 @@ def main(
             continue
     else:
         raise SystemError("Tried 5 times, something is probably wrong...")
+    # """
 
     # http://localhost:8909/ag-grid-community.js
     # loginhtml = login_html(f"http://localhost:{httpserver.port}/ag-grid-community.js")
@@ -504,6 +635,7 @@ def main(
 
     MyWindow.bind("repolink", slot_repolink)
     MyWindow.bind("qqgrlink", slot_qqgrlink)
+    MyWindow.bind("deeplDocsLink", slot_deepl_docs_link)
 
     MyWindow.bind("loadFile", slot_loadfile)
     MyWindow.bind("saveEdit1", slot_saveedit1)

@@ -1,0 +1,10 @@
+    host: str = typer.Option(  # pylint: disable=(unused-argument
+        "127.0.0.1",
+        help="Internal deepl server's IP.",
+    ),
+    port: int = typer.Option(  # pylint: disable=(unused-argument
+        DEEPL_PORT,
+        "--port",
+        "-p",
+        help="Internal deepl server's port, change if the default it occupied.",
+    ),
