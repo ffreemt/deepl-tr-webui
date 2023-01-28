@@ -15,13 +15,20 @@
 
       <a id="tab2" class={% if atab|int == 2 %} "tab tab-lifted tab-active"> {% else %} "tooltip tooltip-right tab tab-lifted" data-tip="Translate and edit when necesssary"> {% endif %}
         <span style="font-size: 25px; color: Tomato;">
-          <i class="fas fa-edit"></i>
+          <i class="fas fa-globe"></i>
+                <!-- fas fa-language -->
         </span>
       </a>
 
       <a id="tab3" class={% if atab|int == 3 %} "tab tab-lifted tab-active"> {% else %} "tooltip tooltip-right tab tab-lifted" data-tip="qq-group:316287378"> {% endif %}
         <span style="font-size: 25px; color: Tomato;">
           <i class="fa fa-info"></i>
+        </span>
+      </a>
+
+      <a id="tablog" class={% if atab|int == 5 %} "tab tab-lifted tab-active"> {% else %} "tooltip tooltip-right tab tab-lifted" data-tip="for logging messages"> {% endif %}
+        <span style="font-size: 25px; color: Tomato;">
+          <i class="fas fa-file-signature"></i>
         </span>
       </a>
 

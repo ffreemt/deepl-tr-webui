@@ -62,8 +62,8 @@ def list2rowdata(list_: List[List[str]]) -> dict:
 
     The first row will be header data, conformant with csv2list(ag-grid.api.getDataAsCsv()).
 
-    >>> _ = [['text', 'text-tr'], ['', '']]
-    >>> list2rowdata(_) == [{'text': '', 'text-tr': ''}]
+    >>> _ = [['text', 'texttr'], ['', '']]
+    >>> list2rowdata(_) == [{'text': '', 'texttr': ''}]
     True
     >>> list1 = [['text'], [""]]
     >>> list2rowdata(list1) == [{'text': ''}]

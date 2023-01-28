@@ -60,7 +60,7 @@ rowData = [
 row_data1 = [
     {"text": ""},
 ]
-row_data2 = [{"text": "", "text-tr": ""}]
+row_data2 = [{"text": "", "texttr": ""}]
 
 HTTPSERVER_PORT = 8909
 DEEPL_PORT = 9909
@@ -77,12 +77,13 @@ ns = SimpleNamespace(
     text="",
     text2="",
     list1=[["text"], [""]],
-    list2=[["text", "text-tr"], ["", ""]],
+    list2=[["text", "texttr"], ["", ""]],
     row_data1=row_data1,
     row_data2=row_data2,
     to_lang="zh",
     debug=False,
     timestamp=0.0,
+    logmsg="",
 )
 if set_loglevel() <= 10:
     ns.debug = True
@@ -126,6 +127,12 @@ def tab2_html() -> str:
 def tab3_html() -> str:
     """Prep html for tab3 (info tab)."""
     _ = env.get_template("tab3.html")
+    return _.render(ns=ns)
+
+
+def tablog_html() -> str:
+    """Prep html for tablog (log tab)."""
+    _ = env.get_template("tablog.html")
     return _.render(ns=ns)
 
 
@@ -274,6 +281,38 @@ def slot_tab3(evt: webui.event):
     except Exception as exc:
         logger.error(exc)
 
+def slot_tablog(evt: webui.event):
+    """Reveive signal tab1."""
+    logger.debug(" tablog clicked...")
+
+    cond_delay()
+
+    if ns.active_tab == 5:
+        return
+
+    logger.debug("\t Update display V to tablog ")
+
+    try:
+        _ = tablog_html()
+        evt.window.show(_)
+        ns.active_tab = 5
+    except Exception as exc:
+        logger.error(exc)
+        return 
+    # empty logmsg, do nothing
+    if not ns.logmsg.strip():
+        return 
+        
+    # append ns.logmsg and clear ns.logmsg
+    res = evt.window.run_js(f"""return document.getElementById("tablog").innerHTML += {ns.logmsg};""")
+    # Check for any error
+    if res.error is True:
+        logger.error("JavaScript Error: " + res.data)
+        return
+
+    # success, clear ns.logmsg
+    ns.logmsg = ""        
+
 
 def slot_tab4(evt: webui.event):
     """Reveive signal tab4."""
@@ -362,8 +401,8 @@ def slot_loadfile(evt: webui.event):
 
     # update ns.list2 ns.row_data2
     ns.list2 = [elm + [""] for elm in ns.list1[1:]]  # remove list1's header
-    ns.list2.insert(0, ["text", "text-tr"])
-    # ns.row_data2 = [dict(zip(['text', 'text-tr'], elm0)) for elm0 in ns.list2[1:]]
+    ns.list2.insert(0, ["text", "texttr"])
+    # ns.row_data2 = [dict(zip(['text', 'texttr'], elm0)) for elm0 in ns.list2[1:]]
     ns.row_data2 = [dict(zip(ns.list2[0], elm)) for elm in ns.list2[1:]]
 
     logger.debug(f" ns.list2: {ns.list2[:2]}")
@@ -434,8 +473,8 @@ def slot_saveedit1(evt: webui.event):
     ns.row_data1 = [dict(zip(ns.list1[0], elm)) for elm in ns.list1[1:]]
 
     ns.list2 = [elm + [""] for elm in ns.list1[1:]]  # remove list1's header
-    ns.list2.insert(0, ["text", "text-tr"])
-    # ns.row_data2 = [dict(zip(['text', 'text-tr'], elm0)) for elm0 in ns.list2[1:]]
+    ns.list2.insert(0, ["text", "texttr"])
+    # ns.row_data2 = [dict(zip(['text', 'texttr'], elm0)) for elm0 in ns.list2[1:]]
     ns.row_data2 = [dict(zip(ns.list2[0], elm)) for elm in ns.list2[1:]]
 
 
@@ -472,7 +511,7 @@ def slot_saveedit2(evt: webui.event):
 def slot_translate(evt: webui.event) -> str:
     """Handle #translate click.
 
-    Update ns.row_data1, ns.list2
+    Update ns.list1, ns.row_data1, ns.list2, ns.row_data2
     """
     logger.debug(" translate btn in tab2.html clicked ")
     try:
@@ -505,20 +544,23 @@ def slot_translate(evt: webui.event) -> str:
     logger.debug(f"translated: {res[:120]}")
 
     # replace the second col with text_tr
-    ns.list2 = [["text", "text-tr"]] + [*zip_longest(list2_r[0], res.splitlines(), fillvalue="")]
+    ns.list2 = [["text", "texttr"]] + [*zip_longest(list2_r[0], res.splitlines(), fillvalue="")]
     ns.row_data2 = list2rowdata(ns.list2)
 
     logger.debug(f" ns.list2[:10]: {ns.list2[:3]}")
     logger.debug(f" ns.row_data2[:10]: {ns.row_data2[:3]}")
 
+    _ = '''
     try:
         evt.window.run_js(
             f"""document.getElementById('log').innerHTML = 'res[:120]: {res[:120]}';"""
         )
     except Exception as exc:
         logger.exception(exc)
+    # '''
 
     # update tab2 with translated text
+    _ = """
     try:
         _ = tab2_html()
         evt.window.show(_)
@@ -526,6 +568,7 @@ def slot_translate(evt: webui.event) -> str:
     except Exception as exc:
         # logger.error(exc)
         logger.exception(exc)
+    # """
 
 
 def deepl_tr(
@@ -592,6 +635,7 @@ def main(
             ns.cwd.insert(0, Path(httpserver.cwd))
             logger.debug(f" cwd paths: {ns.cwd}")
             logger.debug(f"cwd paths exist: {[elm.exists() for elm in ns.cwd]}")
+            ns.logmsg += f"<br />cwd paths exist: {[elm.exists() for elm in ns.cwd]}"
             break
         sleep(0.1)
 
@@ -631,6 +675,7 @@ def main(
     MyWindow.bind("tab1", slot_tab1)
     MyWindow.bind("tab2", slot_tab2)
     MyWindow.bind("tab3", slot_tab3)
+    MyWindow.bind("tablog", slot_tablog)
     MyWindow.bind("tab4", slot_tab4)
 
     MyWindow.bind("repolink", slot_repolink)
