@@ -214,6 +214,11 @@ def slot_tab1(evt: webui.event):
     # save tab2 rg-grid data (if modified) to ns.row_data2
 
     logger.debug("\t Update display V to tab1 ")
+    try:
+        # evt.window.show("")
+        sleep(1e-1)
+    except Exception as exc:
+        logger.exception(exc)
 
     try:
         _ = tab1_html()
@@ -291,6 +296,11 @@ def slot_tablog(evt: webui.event):
         return
 
     logger.debug("\t Update display V to tablog ")
+    try:
+        # evt.window.show("")
+        sleep(1e-1)
+    except Exception as exc:
+        logger.exception(exc)
 
     try:
         _ = tablog_html()
@@ -298,11 +308,11 @@ def slot_tablog(evt: webui.event):
         ns.active_tab = 5
     except Exception as exc:
         logger.error(exc)
-        return 
+        return
     # empty logmsg, do nothing
     if not ns.logmsg.strip():
-        return 
-        
+        return
+
     # append ns.logmsg and clear ns.logmsg
     res = evt.window.run_js(f"""return document.getElementById("tablog").innerHTML += {ns.logmsg};""")
     # Check for any error
@@ -311,7 +321,7 @@ def slot_tablog(evt: webui.event):
         return
 
     # success, clear ns.logmsg
-    ns.logmsg = ""        
+    ns.logmsg = ""
 
 
 def slot_tab4(evt: webui.event):
@@ -619,7 +629,7 @@ def main(
 ):
     """Wrap deepl-fastapi with webui2."""
     # if LOGURU_LEVEL is set use it
-    # otherwise set accoding to set_loglevel, default "INFO"/20
+    # otherwise set according to set_loglevel, default "INFO"/20
     if os.environ.get("LOGURU_LEVEL") is None:
         logger.remove()
         logger.add(sys.stderr, level=set_loglevel())
@@ -667,6 +677,7 @@ def main(
 
     # Create a window object
     MyWindow = webui.window()
+    # MyWindow.multi_access(True)
 
     # Bind am HTML element ID with a python function
     # MyWindow.bind("CheckPassword", check_the_password)
