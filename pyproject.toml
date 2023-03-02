@@ -14,12 +14,12 @@ set-loglevel = "^0.1.2"
 typer = "^0.4.1"
 icecream = "^2.1.1"
 install = "^1.3.5"
-webui2 = {version = "^2.0.3", allow-prereleases = true}
+webui2 = "^2.0.6"
 Jinja2 = "^3.1.2"
 loguru = "^0.6.0"
 cchardet = "^2.1.7"
 charset-normalizer = "^3.0.1"
-deepl-scraper-pp2 = {version = "^0.1.0a1", allow-prereleases = true}
+deepl-scraper-pp2 = "^0.1.0a2"
 httpx = "^0.23.3"
 
 [tool.poe.executor]

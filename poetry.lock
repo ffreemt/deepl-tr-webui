@@ -127,7 +127,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "deepl-scraper-pp2"
-version = "0.1.0a1"
+version = "0.1.0a2"
 description = "scrape deepl via pyppeteer2 with para info"
 category = "main"
 optional = false
@@ -862,7 +862,7 @@ python-versions = ">=3.6.1"
 
 [[package]]
 name = "webui2"
-version = "2.0.3"
+version = "2.0.6"
 description = "Use any web browser as GUI"
 category = "main"
 optional = false
@@ -890,7 +890,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8.3"
-content-hash = "5001334a6230b80480cd8a479e50ac85ad782fd9241635527b2cde17ad88ace3"
+content-hash = "60a1775152c242f8fbb7532013413007fb6491684f7b6e3a5f7bf43cdb189781"
 
 [metadata.files]
 about-time = [
@@ -1055,8 +1055,8 @@ cssselect = [
     {file = "cssselect-1.2.0.tar.gz", hash = "sha256:666b19839cfaddb9ce9d36bfe4c969132c647b92fc9088c4e23f786b30f1b3dc"},
 ]
 deepl-scraper-pp2 = [
-    {file = "deepl-scraper-pp2-0.1.0a1.tar.gz", hash = "sha256:3dc7fa104465262c9777b0aed3d7a07285da1b02b0e174a1d8cf63a39ae3b4a1"},
-    {file = "deepl_scraper_pp2-0.1.0a1-py3-none-any.whl", hash = "sha256:87a387723cfa334934dfc696bde8f3f5b747481a92d6d646615cfef53c435260"},
+    {file = "deepl-scraper-pp2-0.1.0a2.tar.gz", hash = "sha256:770a3befcc5f39ac4d983d3290c9d4b4bfcc20b9e48436534ff154d7ccea1974"},
+    {file = "deepl_scraper_pp2-0.1.0a2-py3-none-any.whl", hash = "sha256:9ab6fead4a86d607c904585ee070db2a20a56ba38e38c8418f99adbc8b584362"},
 ]
 dill = [
     {file = "dill-0.3.6-py3-none-any.whl", hash = "sha256:a07ffd2351b8c678dfc4a856a3005f8067aea51d6ba6c700796a4d9e280f39f0"},
@@ -1506,8 +1506,8 @@ websockets = [
     {file = "websockets-8.1.tar.gz", hash = "sha256:5c65d2da8c6bce0fca2528f69f44b2f977e06954c8512a952222cea50dad430f"},
 ]
 webui2 = [
-    {file = "webui2-2.0.3-py3-none-any.whl", hash = "sha256:9d568af0c0e4f085ae8f49ce8849a107b6fb5dcec43216eff10b46e921233a7a"},
-    {file = "webui2-2.0.3.tar.gz", hash = "sha256:5e6631b6ba05702c15c0422ccea84bace716f7726119d9dbd1b9d7130234dff8"},
+    {file = "webui2-2.0.6-py3-none-any.whl", hash = "sha256:ec1d04f3629eb7e5ebf10e02cb705847826840a899b2cc7405f52919e60bdd01"},
+    {file = "webui2-2.0.6.tar.gz", hash = "sha256:e5d1bb46dbe7336f8e9c1940c46a4abaff987b5abfbcd17660e457c68085b30b"},
 ]
 win32-setctime = [
     {file = "win32_setctime-1.1.0-py3-none-any.whl", hash = "sha256:231db239e959c2fe7eb1d7dc129f11172354f98361c4fa2d6d2d7e278baa8aad"},
