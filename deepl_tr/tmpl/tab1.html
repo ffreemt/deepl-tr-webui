@@ -1,0 +1,40 @@
+{% extends "deepl-tr-base.html" %}
+
+{% block navbar_active %}
+  {{ navbar_active(1) }}
+
+<!-- <div class="mt-12"> -->
+<!-- </div> -->
+
+<div class="mt-10">
+&nbsp;
+</div>
+
+<!-- <div class="px-1 mt-39 flex flex-row gap gap-1"> -->
+
+<div class="flex flow-row gap gap-5">
+<div class="indicator">
+  <div class="indicator-item indicator-top">
+    <button id="loadFile" class="btn btn-accent"> Load </button>
+  </div>
+   <div class="indicator-item indicator-bottom">
+    <button onclick="onBtnUpdate()" id="saveEdit1" class="btn btn-accent"> SaveEdit </button>
+  </div>
+  <div class="form-control w-41 bg-red-50">
+    <label class="label">
+      <span class="label-text">Pick a (.txt) file  </span>
+      <!--span class="label-text-alt">Alt label</span-->
+    </label>
+    <input id="filename" name="filename" type="file" class="file-input file-input-ghost file-input-accent file-input-bordered w-full max-w-xs" accept=".txt, .md"/>
+  </div>
+</div>
+  <textarea style="display:{{ 'inline' and ns.debug or 'none' }}" id="csvResult1" class="resize">Click the SAVEEDIT button to view exported CSV here</textarea>
+</div>
+
+<!-- most recent file first -->
+<!-- sorted(Path("~", 'Downloads').expanduser().glob("export*.csv"), key=lambda x: x.stat().st_mtime, reverse=True) -->
+
+{% include "aggrid-table1.html" %}
+    <!-- onBtnUpdate/onBtnExport defined in aggrid-table1.html onclick="onBtnExport()" -->
+
+{% endblock %}

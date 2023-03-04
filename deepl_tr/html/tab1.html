@@ -1,0 +1,176 @@
+
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>deepl-tr-webui v0.1.0a1</title>
+
+		<meta charSet="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <style media="only screen">
+      body {
+          padding: 1rem;
+          overflow: auto;
+      }
+    </style>
+
+    <!--link rel="stylesheet" href="http://localhost:8909/static/fontawesome.css" />
+    <link rel="stylesheet" href="http://localhost:8909/static/brands.css" />
+    <link rel="stylesheet" href="http://localhost:8909/static/solid.css" /-->
+
+    <!-- fontawesome -->
+    <!-- <link rel="stylesheet" href=http://localhost:24092/static/all.css" /> -->
+
+    <!-- https://fontawesome.com/docs/web/setup/host-yourself/webfonts -->
+    <!-- <link href="/your-path-to-fontawesome/css/fontawesome.css" rel="stylesheet"> -->
+    <!-- <link href="/your-path-to-fontawesome/css/brands.css" rel="stylesheet"> -->
+    <!-- <link href="/your-path-to-fontawesome/css/solid.css" rel="stylesheet"> -->
+    <link href="http://localhost:24092/css/fontawesome.css" rel="stylesheet">
+    <link href="http://localhost:24092/css/brands.css" rel="stylesheet">
+    <link href="http://localhost:24092/css/solid.css" rel="stylesheet">
+
+    <!--script defer src="http://localhost:8909/fontawesome/js/all.js"></script--> <!--load all styles -->
+    <!-- <script defer src="http://localhost:8909/static/all.js"> -->
+
+    <!--script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.js"></script-->
+    <!--script src="node_modules/ag-grid-community/dist/ag-grid-community.js"></script-->
+    <!--script src="ag-grid-community.min.js"></script-->
+
+    <!--link href="https://cdn.jsdelivr.net/npm/daisyui@2.47.0/dist/full.css" rel="stylesheet" type="text/css" /-->
+    <link href="http://localhost:24092/static/daisyui2.47.0.css" rel="stylesheet" type="text/css" />
+    <script src="http://localhost:24092/static/tailwind-plugins.css"></script>
+
+    <script src="http://localhost:24092/static/ag-grid-community.js"></script>
+    </head>
+
+    <body>
+    <!-- <div class="container p-1 mt-15 mx-auto flex flex-col"> -->
+    <!-- <div class="container p-1 mt-15 mx-auto columns-1"> -->
+
+    <main class="my-0 mx-auto max-w-3xl>
+
+    <div class="container p-1 mt-15 mx-auto grid grid-cols-1">
+        <!--h1 class="text-slate-500 font-medium">WebUI 2 - Python Example-</h1-->
+
+      
+
+      
+
+      
+  
+<div class="navbar fixed top-0 z-40 bg-base-100">
+  <div class="flex-1">
+    <div class="tabs">
+
+      <button id="tab1" class= "tab tab-lifted tab-active"> 
+        <span style="font-size: 25px; color: Tomato;">
+          <i class="fa fa-file-alt"></i>
+        </span>
+          <!-- <button id="filebtn"><i class="fa fa-file-alt"></i>Normal</button> -->
+      </button>
+
+      <button id="tab2" class= "tooltip tooltip-right tab tab-lifted" data-tip="Translate and edit when necesssary"> 
+        <span style="font-size: 25px; color: Tomato;">
+          <i class="fas fa-globe"></i>
+                <!-- fas fa-language -->
+        </span>
+      </button>
+
+      <a id="tab3" class= "tooltip tooltip-right tab tab-lifted" data-tip="qq-group:316287378"> 
+        <span style="font-size: 25px; color: Tomato;">
+          <i class="fa fa-info"></i>
+        </span>
+      </a>
+
+      <a id="tablog" class= "tooltip tooltip-right tab tab-lifted" data-tip="for logging messages"> 
+        <span style="font-size: 25px; color: Tomato;">
+          <i class="fas fa-file-signature"></i>
+        </span>
+      </a>
+
+      <a id="tab4" class= "tooltip tooltip-right tab tab-lifted" data-tip="Click to quit, no question asked"> 
+        <span style="font-size: 25px; color: Tomato;">
+          <i class="fa fa-power-off"></i>
+        </span>
+      </a>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- <div class="mt-12"> -->
+<!-- </div> -->
+
+<div class="mt-10">
+&nbsp;
+</div>
+
+<!-- <div class="px-1 mt-39 flex flex-row gap gap-1"> -->
+
+<div class="flex flow-row gap gap-5">
+<div class="indicator">
+  <div class="indicator-item indicator-top">
+    <button id="loadFile" class="btn btn-accent"> Load </button>
+  </div>
+   <div class="indicator-item indicator-bottom">
+    <button onclick="onBtnUpdate()" id="saveEdit1" class="btn btn-accent"> SaveEdit </button>
+  </div>
+  <div class="form-control w-41 bg-red-50">
+    <label class="label">
+      <span class="label-text">Pick a (.txt) file  </span>
+      <!--span class="label-text-alt">Alt label</span-->
+    </label>
+    <input id="filename" name="filename" type="file" class="file-input file-input-ghost file-input-accent file-input-bordered w-full max-w-xs" accept=".txt, .md"/>
+  </div>
+</div>
+  <textarea style="display:True" id="csvResult1" class="resize">Click the SAVEEDIT button to view exported CSV here</textarea>
+</div>
+
+<!-- most recent file first -->
+<!-- sorted(Path("~", 'Downloads').expanduser().glob("export*.csv"), key=lambda x: x.stat().st_mtime, reverse=True) -->
+
+
+<div id="myGrid1" style="height: 800px; width: 100%;" class="ag-theme-balham"></div>
+
+<script type="text/javascript" charset="utf-8">
+const columnDefs = [
+  {
+    headerName: 'text',
+    field: "text",
+    editable: true,
+    flex: 1,
+    resizable: true,
+    autoHeight: true,
+    wrapText: true,
+    cellEditor: 'agLargeTextCellEditor',
+    //cellEditorPopup: true,
+  },
+]
+  const gridOptions = {
+    columnDefs: columnDefs,
+    //rowData: rowData
+    rowData: [{'text': ''}]
+  };
+  const eGridDiv = document.querySelector('#myGrid1');
+  new agGrid.Grid(eGridDiv, gridOptions);
+
+  function onBtnExport() {
+    gridOptions.api.exportDataAsCsv();
+  }
+  function onBtnUpdate() {
+    document.querySelector('#csvResult1').value = gridOptions.api.getDataAsCsv();
+  }
+</script>
+    <!-- onBtnUpdate/onBtnExport defined in aggrid-table1.html onclick="onBtnExport()" -->
+
+
+
+
+      <!-- <div id="log" style="color: #dbdd52">===&nbsp;===</div> -->
+      <!-- <div id="log" style="color: red">&nbsp;</div> -->
+      <div id="log" style="color: #dbdd52">&nbsp;</div>
+    </div>
+    </main>
+    </body>
+</html>

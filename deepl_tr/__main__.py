@@ -85,13 +85,14 @@ ns = SimpleNamespace(
     timestamp=0.0,
     logmsg="",
 )
-if set_loglevel() <= 10:
+if os.environ.get("LOGURU_LEVEL") in ["DEBUG"] or set_loglevel() <= 10:
     ns.debug = True
 
 logger.debug(f" ns.debug: {ns.debug}")
 
 pdir = Path(__file__).parent
-env = Environment(loader=FileSystemLoader(f"{pdir}/templates"))
+# env = Environment(loader=FileSystemLoader(f"{pdir}/templates"))
+env = Environment(loader=FileSystemLoader(f"{pdir}/tmpl"))
 
 app = typer.Typer(
     name="deepl-tr",
@@ -115,7 +116,9 @@ def login_html() -> str:
 def tab1_html() -> str:
     """Prep html for tab1 (file tab)."""
     _ = env.get_template("tab1.html")
-    return _.render(ns=ns)
+    _ = _.render(ns=ns)
+    Path(pdir / 'html/tab1.html').write_text(_, encoding="utf8")
+    return f"{ns.s_root}/html/tab1.html"
 
 
 def tab2_html() -> str:
@@ -224,7 +227,8 @@ def slot_tab1(evt: webui.event):
         _ = tab1_html()
         # check timetamp to prevent 'access violation reading'?
 
-        evt.window.show(_)
+        # evt.window.show(_)
+        evt.window.open(_, webui.browser.chrome)
         ns.active_tab = 1
     except Exception as exc:
         logger.error(exc)
@@ -240,7 +244,7 @@ def slot_tab1(evt: webui.event):
 
 
 def slot_tab2(evt: webui.event):
-    """Reveive signal tab1."""
+    """Reveive signal tab2."""
     logger.debug(" tab2 clicked...")
 
     logger.debug(f" ns.list2: {ns.list2[:2]}")
@@ -251,7 +255,7 @@ def slot_tab2(evt: webui.event):
     if ns.active_tab == 2:
         # tab2 alreay active, do nothing
         row_data = evt.window.run_js(
-            f"""console.log("__main__.py l.181");"""
+            f"""console.log("__main__.py l.257");"""
             f"""const _ = document.querySelector('#myGrid2'); console.log(_); return _;"""
         )
         return
@@ -261,7 +265,9 @@ def slot_tab2(evt: webui.event):
 
     try:
         _ = tab2_html()
-        evt.window.show(_)
+
+        # evt.window.show(_)
+        evt.window.open(_)
         ns.active_tab = 2
     except Exception as exc:
         # logger.error(exc)
@@ -269,7 +275,7 @@ def slot_tab2(evt: webui.event):
 
 
 def slot_tab3(evt: webui.event):
-    """Reveive signal tab1."""
+    """Reveive signal tab3."""
     logger.debug(" tab3 clicked...")
 
     cond_delay()
@@ -637,7 +643,9 @@ def main(
     logger.debug(f"Now in {os.getcwd()}")
 
     # start httpserver for tailwindcss/daisyui/ag-grid/fontawesome etc
-    Thread(target=httpserver, daemon=True).start()
+
+    _ = """"
+    # Thread(target=httpserver, daemon=True).start()
     # wait for httpserver to be ready
     while True:
         if hasattr(httpserver, "port"):
@@ -648,10 +656,11 @@ def main(
             ns.logmsg += f"<br />cwd paths exist: {[elm.exists() for elm in ns.cwd]}"
             break
         sleep(0.1)
+    # """
 
     # sync deepl-scraper-pw not working
     # switch to
-    # _ = """
+    _ = """
     # start deepl server, starting port: ns.deepl_port
     start_port = ns.deepl_port
     for offset in range(5):
@@ -673,11 +682,16 @@ def main(
 
     # http://localhost:8909/ag-grid-community.js
     # loginhtml = login_html(f"http://localhost:{httpserver.port}/ag-grid-community.js")
-    loginhtml = login_html()
+    # loginhtml = login_html()
 
     # Create a window object
     MyWindow = webui.window()
-    # MyWindow.multi_access(True)
+    MyWindow.multi_access(True)
+
+    # Create a new web server using WebUI
+    root_path = Path(__file__).parent.as_posix()
+    s_root = MyWindow.new_server(root_path)
+    ns.s_root = s_root  # need this in daisyui tailwind ag-grid setup
 
     # Bind am HTML element ID with a python function
     # MyWindow.bind("CheckPassword", check_the_password)
@@ -703,16 +717,25 @@ def main(
     # MyWindow.show(login_html)
 
     # MyWindow.show(loginhtml)
-    MyWindow.show(tab1_html())
+    # MyWindow.show(tab1_html())
+
+    # MyWindow.open(tab1_html())
+    _ = tab1_html()
+    logger.debug(f"opening {_}")
+    MyWindow.open(_, webui.browser.chrome)
 
     # Wait until all windows are closed
+    webui.wait()
+
+    _ = """
     try:
         webui.wait()
+    except Exception as exc:
+        logger.exception(exc)
     finally:
-        if proc_deepl.is_alive():
-            proc_deepl.kill()  # not necessary
-        typer.echo("Bye.")
-
+        if proc_deepl.is_alive(): proc_deepl.kill()
+        typer.echo("Bye...")
+    # """
 
 if __name__ == "__main__":
     # main()

@@ -3,7 +3,8 @@
   "ignore": [
     ".venv",
     ".git",
-    "node_modules/**/node_modules"
+    "node_modules/**/node_modules",
+    "deepl_tr/html"
   ],
   "verbose": true,
   "execMap": {
@@ -17,5 +18,5 @@
   "env": {
     "NODE_ENV": "development"
   },
-  "ext": "js json py html"
+  "ext": "js json py"
 }
