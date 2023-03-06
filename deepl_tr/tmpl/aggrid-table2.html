@@ -1,0 +1,48 @@
+
+<div id="myGrid2" style="height: 800px; width: 100%;" class="ag-theme-balham"></div>
+
+<script type="text/javascript" charset="utf-8">
+const columnDefs = [
+  {
+    headerName: 'text',
+    field: 'text',
+    editable: true,
+    flex: 1,
+    resizable: true,
+    autoHeight: true,
+    wrapText: true,
+    cellEditor: 'agLargeTextCellEditor',
+    cellEditorPopup: true,
+  },
+  {
+    headerName: 'texttr',
+    field: 'texttr',
+    editable: true,
+    flex: 2,
+    resizable: true,
+    autoHeight: true,
+    wrapText: true,
+    cellEditor: 'agLargeTextCellEditor',
+    cellEditorPopup: true,
+    cellEditorParams: {
+        maxLength: 5000,
+        rows: 10,
+        cols: 80
+    }
+  },
+]
+const gridOptions = {
+    columnDefs: columnDefs,
+    //rowData: rowData
+    rowData: {{ ns.row_data2 }}
+};
+// setup the grid after the page has finished loading
+document.addEventListener('DOMContentLoaded', () => {
+    const eGridDiv = document.querySelector('#myGrid2');
+    new agGrid.Grid(eGridDiv, gridOptions);
+})
+
+function onBtnUpdate() {
+  document.querySelector('#csvResult2').value = gridOptions.api.getDataAsCsv();
+}
+</script>

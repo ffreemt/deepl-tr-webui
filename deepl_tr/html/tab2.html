@@ -62,14 +62,14 @@
   <div class="flex-1">
     <div class="tabs">
 
-      <button class= "tab tab-lifted tab-active"> 
+      <button class= "tooltip tooltip-right tab tab-lifted" data-tip="Load a text file"> 
         <span style="font-size: 25px; color: Tomato;">
           <i id="tab1" class="fa fa-file-alt"></i>
         </span>
           <!-- <button id="filebtn"><i class="fa fa-file-alt"></i>Normal</button> -->
       </button>
 
-      <button class= "tooltip tooltip-right tab tab-lifted" data-tip="Translate and edit when necesssary"> 
+      <button class= "tab tab-lifted tab-active"> 
         <span style="font-size: 25px; color: Tomato;">
           <i id="tab2" class="fas fa-globe"></i>
                 <!-- fas fa-language -->
@@ -106,74 +106,85 @@
 </div>
 
 
-<!-- <div class="mt-12"> -->
-<!-- </div> -->
-
-<div class="mt-10">
+<div class="mt-6">
 &nbsp;
 </div>
 
-    <!-- <div> -->
-      <!-- <button id="dummy1">Dummy1</button> -->
-    <!-- </div> -->
+<div class="px-5 flex flex-row gap gap-1">
+  <div data-tip="target language" class="tooltip tooptip-right">
+  <select id="tgtLang" class="select select-info w-35 max-w-xs">
+    <option disabled>Select tgt-lang</option>
+    <option selected>To Chinese</option>
+    <option>To English</option>
+    <option>To German</option>
+    <option>To French</option>
+    <option>To Italian</option>
+    <option>To Japanese</option>
+  </select></div>
+  <span data-tip="to effect change after editing text or text-tr" class="tooltip tooltip-right">
+    <button onclick="onBtnUpdate()" id="saveEdit2" class="btn btn-accent"> SaveEdit </button>
+  </span>
+  <span data-tip="a headless browser will be used to talk to deepl.com, in effect equivalent to launching a browser and browsing deepl.com, hence, indiscriminate use may result in your IP being banned by deepl.com." class="tooltip tooltip-bottom">
+    <button id="translate" class="btn btn-accent"> Translate </button>
+  </span>
+  <span data-tip="coming soon: save a two-column csv file on disk" class="tooltip tooltip-right">
+    <button id="saveCsv2" class="btn btn-accent opacity-50 cursor-not-allowed"> SaveCSV </button>
+  </span>
+  <textarea style="display:True" id="csvResult2" class="resize">
+    Click the SAVE button to view exported CSV here
+  </textarea>
 
-<!-- <div class="px-1 mt-39 flex flex-row gap gap-1"> -->
-
-<div class="flex flow-row gap gap-5">
-<div class="indicator">
-  <div class="indicator-item indicator-top">
-    <button id="loadFile" class="btn btn-accent"> Load </button>
-  </div>
-   <div class="indicator-item indicator-bottom">
-    <button onclick="onBtnUpdate()" id="saveEdit1" class="btn btn-accent"> SaveEdit </button>
-  </div>
-  <div class="form-control w-41 bg-red-50">
-    <label class="label">
-      <span class="label-text">Pick a (.txt) file  </span>
-      <!--span class="label-text-alt">Alt label</span-->
-    </label>
-    <input id="filename" name="filename" type="file" class="file-input file-input-ghost file-input-accent file-input-bordered w-full max-w-xs" accept=".txt, .md"/>
-  </div>
 </div>
-  <textarea style="display:True" id="csvResult1" class="resize">Click the SAVEEDIT button to view exported CSV here</textarea>
-</div>
-
-<!-- most recent file first -->
-<!-- sorted(Path("~", 'Downloads').expanduser().glob("export*.csv"), key=lambda x: x.stat().st_mtime, reverse=True) -->
+ <!--to disable a button: opacity-50 cursor-not-allowed -->
 
 
-<div id="myGrid1" style="height: 800px; width: 100%;" class="ag-theme-balham"></div>
+<div id="myGrid2" style="height: 800px; width: 100%;" class="ag-theme-balham"></div>
 
 <script type="text/javascript" charset="utf-8">
 const columnDefs = [
   {
     headerName: 'text',
-    field: "text",
+    field: 'text',
     editable: true,
     flex: 1,
     resizable: true,
     autoHeight: true,
     wrapText: true,
     cellEditor: 'agLargeTextCellEditor',
-    //cellEditorPopup: true,
+    cellEditorPopup: true,
+  },
+  {
+    headerName: 'texttr',
+    field: 'texttr',
+    editable: true,
+    flex: 2,
+    resizable: true,
+    autoHeight: true,
+    wrapText: true,
+    cellEditor: 'agLargeTextCellEditor',
+    cellEditorPopup: true,
+    cellEditorParams: {
+        maxLength: 5000,
+        rows: 10,
+        cols: 80
+    }
   },
 ]
-  const gridOptions = {
+const gridOptions = {
     columnDefs: columnDefs,
     //rowData: rowData
-    rowData: [{'text': 'electron apps'}, {'text': '* codex'}, {'text': '* clipper: 10 clips'}, {'text': '笢恅'}]
-  };
-  const eGridDiv = document.querySelector('#myGrid1');
-  new agGrid.Grid(eGridDiv, gridOptions);
+    rowData: [{'text': 'electron apps', 'texttr': '电子应用'}, {'text': '* codex', 'texttr': '*法典'}, {'text': '* clipper: 10 clips', 'texttr': '*剪子：10个剪子'}, {'text': '笢恅', 'texttr': '笢恅趼躉'}]
+};
+// setup the grid after the page has finished loading
+document.addEventListener('DOMContentLoaded', () => {
+    const eGridDiv = document.querySelector('#myGrid2');
+    new agGrid.Grid(eGridDiv, gridOptions);
+})
 
-  function onBtnExport() {
-    gridOptions.api.exportDataAsCsv();
-  }
-  function onBtnUpdate() {
-    document.querySelector('#csvResult1').value = gridOptions.api.getDataAsCsv();
-  }
+function onBtnUpdate() {
+  document.querySelector('#csvResult2').value = gridOptions.api.getDataAsCsv();
+}
 </script>
-    <!-- onBtnUpdate/onBtnExport defined in aggrid-table1.html onclick="onBtnExport()" -->
 
 
 

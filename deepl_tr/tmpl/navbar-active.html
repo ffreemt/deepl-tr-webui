@@ -6,38 +6,45 @@
   <div class="flex-1">
     <div class="tabs">
 
-      <button id="tab1" class={% if atab|int == 1 %} "tab tab-lifted tab-active"> {% else %} "tooltip tooltip-right tab tab-lifted" data-tip="Load a text file"> {% endif %}
+      <button class={% if atab|int == 1 %} "tab tab-lifted tab-active"> {% else %} "tooltip tooltip-right tab tab-lifted" data-tip="Load a text file"> {% endif %}
         <span style="font-size: 25px; color: Tomato;">
-          <i class="fa fa-file-alt"></i>
+          <i id="tab1" class="fa fa-file-alt"></i>
         </span>
           <!-- <button id="filebtn"><i class="fa fa-file-alt"></i>Normal</button> -->
       </button>
 
-      <button id="tab2" class={% if atab|int == 2 %} "tab tab-lifted tab-active"> {% else %} "tooltip tooltip-right tab tab-lifted" data-tip="Translate and edit when necesssary"> {% endif %}
+      <button class={% if atab|int == 2 %} "tab tab-lifted tab-active"> {% else %} "tooltip tooltip-right tab tab-lifted" data-tip="Translate and edit when necesssary"> {% endif %}
         <span style="font-size: 25px; color: Tomato;">
-          <i class="fas fa-globe"></i>
+          <i id="tab2" class="fas fa-globe"></i>
                 <!-- fas fa-language -->
         </span>
       </button>
 
-      <a id="tab3" class={% if atab|int == 3 %} "tab tab-lifted tab-active"> {% else %} "tooltip tooltip-right tab tab-lifted" data-tip="qq-group:316287378"> {% endif %}
+      <button class={% if atab|int == 3 %} "tab tab-lifted tab-active"> {% else %} "tooltip tooltip-right tab tab-lifted" data-tip="qq-group:316287378"> {% endif %}
         <span style="font-size: 25px; color: Tomato;">
-          <i class="fa fa-info"></i>
+          <i id="tab3" class="fa fa-info"></i>
         </span>
-      </a>
+      </button>
 
-      <a id="tablog" class={% if atab|int == 5 %} "tab tab-lifted tab-active"> {% else %} "tooltip tooltip-right tab tab-lifted" data-tip="for logging messages"> {% endif %}
+      <!-- <a class={% if atab|int == 5 %} "tab tab-lifted tab-active"> {% else %} "tooltip tooltip-right tab tab-lifted" data-tip="for logging messages"> {% endif %} -->
+        <!-- <span style="font-size: 25px; color: Tomato;"> -->
+          <!-- <i id="tablog" class="fas fa-file-signature"></i> -->
+        <!-- </span> -->
+      <!-- </a> -->
+
+      <button class={% if atab|int == 4 %} "tab tab-lifted tab-active"> {% else %} "tooltip tooltip-right tab tab-lifted" data-tip="Click to quit, no question asked"> {% endif %}
         <span style="font-size: 25px; color: Tomato;">
-          <i class="fas fa-file-signature"></i>
+          <i id="tab4" class="fa fa-power-off"></i>
         </span>
-      </a>
+      </button>
 
-      <a id="tab4" class={% if atab|int == 4 %} "tab tab-lifted tab-active"> {% else %} "tooltip tooltip-right tab tab-lifted" data-tip="Click to quit, no question asked"> {% endif %}
-        <span style="font-size: 25px; color: Tomato;">
-          <i class="fa fa-power-off"></i>
-        </span>
-      </a>
-
+        <!-- <div id="dummy"> -->
+                         <!-- <span style="font-size: 25px; color: Tomato;"> -->
+          <!-- <button> -->
+                <!-- <i class="fas fa-file-signature"></i> -->
+          <!-- </button> -->
+              <!-- </span> -->
+        <!-- </div> -->
     </div>
   </div>
 </div>

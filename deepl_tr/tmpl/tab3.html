@@ -1,0 +1,59 @@
+{% extends "deepl-tr-base.html" %}
+
+{% block navbar_active %}
+  {{ navbar_active(3) }}
+
+<!-- <div class="indicator mt-20"> -->
+  <!-- <span class="indicator-item indicator-center badge badge-secondary"></span> -->
+  <!-- <div class="grid w-32 h-32 bg-base-300 place-items-center">Project repo: https://github.com/ffreemt/deepl-tr-webui</div> -->
+<!-- </div> -->
+
+<!-- <div class="indicator"> -->
+  <!-- <span class="indicator-item indicator-center badge badge-secondary"></span> -->
+  <!-- <div class="grid w-32 h-32 bg-base-300 place-items-center">To talk to the dev in real-time, please join qq-group:316287378.</div> -->
+<!-- </div> -->
+
+<!-- card -->
+<div class="card pt-3 shadow-2xl w-180 m-4">
+  <!-- <figure> -->
+    <!-- <img src="https://picsum.photos/id/1005/500/250"/> -->
+  <!-- </figure> -->
+  <div class="card-body">
+    <h6 class="card-title">Quick tips</h6>
+    <ul class="steps steps-vertical">
+      <li data-content="✓" class="step step-primary">Double click a cell or press Enter in a cell to edit.</li>
+      <li data-content="✓" class="step step-primary">Press Enter or click another cell to exit the in-cell editor.</li>
+      <li data-content="✓" class="step step-primary">Press the SAVEEDIT button to effect change after editing.</li>
+      <li data-content="?" class="step"><span class="text-left">To turn on debug: set LOGLEVEL=10 in Windows or export LOGLEVEL=10 in Linux and friends.</span></li>
+
+    </ul>
+
+    <h6 class="card-title">Project repo</h6>
+    <p><a id="repolink" class="link link-primary">https://github.com/ffreemt/deepl-tr-webui</a></p>
+    <p>based on pypi webui2 and some serious, messy juggling of tailwindcss, daisyui, javascript and jinja2 templates.</p>
+
+    <h6 class="card-title">Feedback</h6>
+    <p>Please join qq-group:316287378
+          <a id="qqgrlink" class="link link-primary">https://jq.qq.com/?_wv=1027&k=XRCplcfg</a>
+    for questions and suggestions, or file an issue at the project github repo.</p>
+  </div>
+</div>
+
+<!-- <div class="toast toast-start toast-middle"> -->
+  <!-- <div class="alert"> -->
+    <!-- <div> -->
+      <!-- <span> -->
+      <!-- Project repo: -->
+      <!-- <a class="link link-primary">https://github.com/ffreemt/deepl-tr-webui</a> -->
+
+      <!-- </span> -->
+    <!-- </div> -->
+  <!-- </div> -->
+  <!-- <div class="alert"> -->
+    <!-- <div> -->
+      <!-- <span>To talk to the dev in real-time, please join qq-group:316287378.</span> -->
+    <!-- </div> -->
+  <!-- </div> -->
+<!-- </div> -->
+
+{% endblock %}

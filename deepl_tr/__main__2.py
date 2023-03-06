@@ -49,6 +49,7 @@ import signal
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 print('Press Ctrl+C to quit\n')
 
+
 def tab1_html() -> str:
     """Prep html for tab1 (file tab)."""
     _ = env.get_template("tab1.html")
@@ -62,10 +63,27 @@ def tab2_html() -> str:
 
 def slot_tab1(evt: webui.event):
     """Reveive signal tab1."""
+    print(" tab1 clicked...")
     logger.debug(" tab1 clicked...")
+
+def slot_tab3(evt: webui.event):
+    """Reveive signal tab1."""
+    print(" tab3 clicked...")
+    logger.debug(" tab3 clicked...")
+
+def slot_dummy(evt: webui.event):
+    """Reveive signal dummy."""
+    print(" dummy clicked...")
+    logger.debug(" dummy clicked...")
+
+def slot_dummy1(evt: webui.event):
+    """Reveive signal dummy1."""
+    print(" dummy1 clicked...")
+    logger.debug(" dummy1 clicked...")
 
 def slot_tab2(evt: webui.event):
     """Reveive signal tab2."""
+    print(" tab2 clicked...")
     logger.debug(" tab2 clicked...")
 
     logger.debug(f" ns.list2: {ns.list2[:2]}")
@@ -89,7 +107,7 @@ def slot_tab2(evt: webui.event):
         Path(f"{pdir}/html/tab2.html").write_text(_, encoding="utf8")
 
         # evt.window.show(_)
-        evt.window.open(f"{s_root}/html/tab2.html", webui.browser.chrome)
+        evt.window.open(f"{ns.s_root}/html/tab2.html", webui.browser.chrome)
 
         ns.active_tab = 2
     except Exception as exc:
@@ -116,8 +134,6 @@ def main():
     # Create a window object
     MyWindow = webui.window()
 
-    MyWindow.multi_access(True)
-
     # Bind am HTML element ID with a python function
     MyWindow.bind('SwitchToSecondPage', switch_to_second_page)
     # MyWindow.bind('Exit', close_the_application)
@@ -126,6 +142,11 @@ def main():
 
     MyWindow.bind("tab1", slot_tab1)
     MyWindow.bind("tab2", slot_tab2)
+    MyWindow.bind("tab3", slot_tab3)
+    MyWindow.bind("dummy", slot_dummy)
+    MyWindow.bind("dummy1", slot_dummy1)
+
+    MyWindow.multi_access(True)
 
     # The root path. Leave it empty to let the WebUI
     # automatically select the current working folder

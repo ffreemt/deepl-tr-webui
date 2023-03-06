@@ -62,7 +62,7 @@
   <div class="flex-1">
     <div class="tabs">
 
-      <button class= "tab tab-lifted tab-active"> 
+      <button class= "tooltip tooltip-right tab tab-lifted" data-tip="Load a text file"> 
         <span style="font-size: 25px; color: Tomato;">
           <i id="tab1" class="fa fa-file-alt"></i>
         </span>
@@ -76,7 +76,7 @@
         </span>
       </button>
 
-      <button class= "tooltip tooltip-right tab tab-lifted" data-tip="qq-group:316287378"> 
+      <button class= "tab tab-lifted tab-active"> 
         <span style="font-size: 25px; color: Tomato;">
           <i id="tab3" class="fa fa-info"></i>
         </span>
@@ -106,74 +106,58 @@
 </div>
 
 
-<!-- <div class="mt-12"> -->
+<!-- <div class="indicator mt-20"> -->
+  <!-- <span class="indicator-item indicator-center badge badge-secondary"></span> -->
+  <!-- <div class="grid w-32 h-32 bg-base-300 place-items-center">Project repo: https://github.com/ffreemt/deepl-tr-webui</div> -->
 <!-- </div> -->
 
-<div class="mt-10">
-&nbsp;
+<!-- <div class="indicator"> -->
+  <!-- <span class="indicator-item indicator-center badge badge-secondary"></span> -->
+  <!-- <div class="grid w-32 h-32 bg-base-300 place-items-center">To talk to the dev in real-time, please join qq-group:316287378.</div> -->
+<!-- </div> -->
+
+<!-- card -->
+<div class="card pt-3 shadow-2xl w-180 m-4">
+  <!-- <figure> -->
+    <!-- <img src="https://picsum.photos/id/1005/500/250"/> -->
+  <!-- </figure> -->
+  <div class="card-body">
+    <h6 class="card-title">Quick tips</h6>
+    <ul class="steps steps-vertical">
+      <li data-content="✓" class="step step-primary">Double click a cell or press Enter in a cell to edit.</li>
+      <li data-content="✓" class="step step-primary">Press Enter or click another cell to exit the in-cell editor.</li>
+      <li data-content="✓" class="step step-primary">Press the SAVEEDIT button to effect change after editing.</li>
+      <li data-content="?" class="step"><span class="text-left">To turn on debug: set LOGLEVEL=10 in Windows or export LOGLEVEL=10 in Linux and friends.</span></li>
+
+    </ul>
+
+    <h6 class="card-title">Project repo</h6>
+    <p><a id="repolink" class="link link-primary">https://github.com/ffreemt/deepl-tr-webui</a></p>
+    <p>based on pypi webui2 and some serious, messy juggling of tailwindcss, daisyui, javascript and jinja2 templates.</p>
+
+    <h6 class="card-title">Feedback</h6>
+    <p>Please join qq-group:316287378
+          <a id="qqgrlink" class="link link-primary">https://jq.qq.com/?_wv=1027&k=XRCplcfg</a>
+    for questions and suggestions, or file an issue at the project github repo.</p>
+  </div>
 </div>
 
+<!-- <div class="toast toast-start toast-middle"> -->
+  <!-- <div class="alert"> -->
     <!-- <div> -->
-      <!-- <button id="dummy1">Dummy1</button> -->
+      <!-- <span> -->
+      <!-- Project repo: -->
+      <!-- <a class="link link-primary">https://github.com/ffreemt/deepl-tr-webui</a> -->
+
+      <!-- </span> -->
     <!-- </div> -->
-
-<!-- <div class="px-1 mt-39 flex flex-row gap gap-1"> -->
-
-<div class="flex flow-row gap gap-5">
-<div class="indicator">
-  <div class="indicator-item indicator-top">
-    <button id="loadFile" class="btn btn-accent"> Load </button>
-  </div>
-   <div class="indicator-item indicator-bottom">
-    <button onclick="onBtnUpdate()" id="saveEdit1" class="btn btn-accent"> SaveEdit </button>
-  </div>
-  <div class="form-control w-41 bg-red-50">
-    <label class="label">
-      <span class="label-text">Pick a (.txt) file  </span>
-      <!--span class="label-text-alt">Alt label</span-->
-    </label>
-    <input id="filename" name="filename" type="file" class="file-input file-input-ghost file-input-accent file-input-bordered w-full max-w-xs" accept=".txt, .md"/>
-  </div>
-</div>
-  <textarea style="display:True" id="csvResult1" class="resize">Click the SAVEEDIT button to view exported CSV here</textarea>
-</div>
-
-<!-- most recent file first -->
-<!-- sorted(Path("~", 'Downloads').expanduser().glob("export*.csv"), key=lambda x: x.stat().st_mtime, reverse=True) -->
-
-
-<div id="myGrid1" style="height: 800px; width: 100%;" class="ag-theme-balham"></div>
-
-<script type="text/javascript" charset="utf-8">
-const columnDefs = [
-  {
-    headerName: 'text',
-    field: "text",
-    editable: true,
-    flex: 1,
-    resizable: true,
-    autoHeight: true,
-    wrapText: true,
-    cellEditor: 'agLargeTextCellEditor',
-    //cellEditorPopup: true,
-  },
-]
-  const gridOptions = {
-    columnDefs: columnDefs,
-    //rowData: rowData
-    rowData: [{'text': 'electron apps'}, {'text': '* codex'}, {'text': '* clipper: 10 clips'}, {'text': '笢恅'}]
-  };
-  const eGridDiv = document.querySelector('#myGrid1');
-  new agGrid.Grid(eGridDiv, gridOptions);
-
-  function onBtnExport() {
-    gridOptions.api.exportDataAsCsv();
-  }
-  function onBtnUpdate() {
-    document.querySelector('#csvResult1').value = gridOptions.api.getDataAsCsv();
-  }
-</script>
-    <!-- onBtnUpdate/onBtnExport defined in aggrid-table1.html onclick="onBtnExport()" -->
+  <!-- </div> -->
+  <!-- <div class="alert"> -->
+    <!-- <div> -->
+      <!-- <span>To talk to the dev in real-time, please join qq-group:316287378.</span> -->
+    <!-- </div> -->
+  <!-- </div> -->
+<!-- </div> -->
 
 
 

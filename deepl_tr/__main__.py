@@ -124,13 +124,19 @@ def tab1_html() -> str:
 def tab2_html() -> str:
     """Prep html for tab2 (edit tab)."""
     _ = env.get_template("tab2.html")
-    return _.render(ns=ns)
+    _ = _.render(ns=ns)
+    Path(pdir / 'html/tab2.html').write_text(_, encoding="utf8")
+    return f"{ns.s_root}/html/tab2.html"
 
 
 def tab3_html() -> str:
     """Prep html for tab3 (info tab)."""
     _ = env.get_template("tab3.html")
-    return _.render(ns=ns)
+
+    # return _.render(ns=ns)
+    _ = _.render(ns=ns)
+    Path(pdir / 'html/tab3.html').write_text(_, encoding="utf8")
+    return f"{ns.s_root}/html/tab3.html"
 
 
 def tablog_html() -> str:
@@ -217,11 +223,6 @@ def slot_tab1(evt: webui.event):
     # save tab2 rg-grid data (if modified) to ns.row_data2
 
     logger.debug("\t Update display V to tab1 ")
-    try:
-        # evt.window.show("")
-        sleep(1e-1)
-    except Exception as exc:
-        logger.exception(exc)
 
     try:
         _ = tab1_html()
@@ -250,8 +251,6 @@ def slot_tab2(evt: webui.event):
     logger.debug(f" ns.list2: {ns.list2[:2]}")
     logger.debug(f" ns.row_data2: {row_data2[:2]}")
 
-    cond_delay()
-
     if ns.active_tab == 2:
         # tab2 alreay active, do nothing
         row_data = evt.window.run_js(
@@ -278,8 +277,6 @@ def slot_tab3(evt: webui.event):
     """Reveive signal tab3."""
     logger.debug(" tab3 clicked...")
 
-    cond_delay()
-
     if ns.active_tab == 3:
         return
 
@@ -287,16 +284,17 @@ def slot_tab3(evt: webui.event):
 
     try:
         _ = tab3_html()
-        evt.window.show(_)
+
+        # evt.window.show(_)
+        evt.window.open(_)
         ns.active_tab = 3
     except Exception as exc:
         logger.error(exc)
 
+
 def slot_tablog(evt: webui.event):
     """Reveive signal tab1."""
     logger.debug(" tablog clicked...")
-
-    cond_delay()
 
     if ns.active_tab == 5:
         return
@@ -310,7 +308,9 @@ def slot_tablog(evt: webui.event):
 
     try:
         _ = tablog_html()
-        evt.window.show(_)
+
+        # evt.window.show(_)
+        evt.window.open(_)
         ns.active_tab = 5
     except Exception as exc:
         logger.error(exc)
@@ -334,7 +334,7 @@ def slot_tab4(evt: webui.event):
     """Reveive signal tab4."""
     logger.debug(" tab4 clicked... exiting")
 
-    cond_delay()
+    # cond_delay()
 
     del evt
     webui.exit()
@@ -382,6 +382,7 @@ def slot_loadfile(evt: webui.event):
         evt.window.run_js(
             f"""document.getElementById('log').innerHTML = 'No file loaded';"""
         )
+        logger.warning("No file loaded...")
         return
 
     # locate file in ns.cwd: cwd, ~/Documents
@@ -398,6 +399,8 @@ def slot_loadfile(evt: webui.event):
         evt.window.run_js(
             f"""document.getElementById('log').innerHTML = 'File not found in {_}';"""
         )
+        msg = f"""'File not found in {_}'"""
+        evt.window.run_js(f'''alert({msg});''')
         return
 
     ns.text = loadtext(filepath)
@@ -426,7 +429,9 @@ def slot_loadfile(evt: webui.event):
 
     try:
         _ = tab1_html()
-        evt.window.show(_)
+
+        # evt.window.show(_)
+        evt.window.open(_)
     except Exception as exc:
         logger.exception(exc)
         return
@@ -553,6 +558,9 @@ def slot_translate(evt: webui.event) -> str:
     except Exception as exc:
         # logger.error(exc)
         logger.exception(exc)
+        msg = f"""'Local deepl server probably not up, browse to http://127.0.0.1:{ns.deepl_port}/docs to confirm'"""
+        evt.window.run_js(f'''alert({msg});''')
+
         res = str(exc)
 
     if len(list2_r[0]) != len(res.splitlines()):
@@ -576,10 +584,12 @@ def slot_translate(evt: webui.event) -> str:
     # '''
 
     # update tab2 with translated text
-    _ = """
+    # _ = """
     try:
         _ = tab2_html()
-        evt.window.show(_)
+
+        # evt.window.show(_)
+        evt.window.open(_)
         ns.active_tab = 2
     except Exception as exc:
         # logger.error(exc)
@@ -602,9 +612,12 @@ def deepl_tr(
         to_lang = "zh"
     if port is None:
         port = ns.deepl_port
+
     if host is None:
         host = "127.0.0.1"
+
     url = f"http://{host}:{port}/text"
+
     jdata = {
         "text": text,
         "from_lang": from_lang,
@@ -618,7 +631,12 @@ def deepl_tr(
         logger.exception(exc)
         res = {"result": str(exc)}
 
-    return res.json().get("result")
+    try:
+        _ = res.json().get("result")
+    except Exception as exc:
+        logger.exception(exc)
+        raise
+    return _
 
 
 @app.command()
@@ -660,7 +678,7 @@ def main(
 
     # sync deepl-scraper-pw not working
     # switch to
-    _ = """
+    # _ = """
     # start deepl server, starting port: ns.deepl_port
     start_port = ns.deepl_port
     for offset in range(5):

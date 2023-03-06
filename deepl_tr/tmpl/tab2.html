@@ -24,7 +24,7 @@
   <span data-tip="a headless browser will be used to talk to deepl.com, in effect equivalent to launching a browser and browsing deepl.com, hence, indiscriminate use may result in your IP being banned by deepl.com." class="tooltip tooltip-bottom">
     <button id="translate" class="btn btn-accent"> Translate </button>
   </span>
-  <span data-tip="save a two-column csv file on disk" class="tooltip tooltip-right">
+  <span data-tip="coming soon: save a two-column csv file on disk" class="tooltip tooltip-right">
     <button id="saveCsv2" class="btn btn-accent opacity-50 cursor-not-allowed"> SaveCSV </button>
   </span>
   <textarea style="display:{{ 'inline' and ns.debug or 'none' }}" id="csvResult2" class="resize">
@@ -32,6 +32,7 @@
   </textarea>
 
 </div>
+ <!--to disable a button: opacity-50 cursor-not-allowed -->
 
 {% include "aggrid-table2.html" %}
 
